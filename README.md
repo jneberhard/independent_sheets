@@ -7,3 +7,5 @@ Ben Wasden: "All we have to decide is what to do with the time that is given us.
 Jim Eberhard: "Shine on, like the sun, the moon, and the stars. Even the dimmest star shines bright somewhere."
 
 Happiness Ncube: "For as he thinketh in his heart, so is he" - Proverbs 23:7 (KJV).
+
+Boitumelo Hebert Meletse: “Success is not only about achieving your goals, but about lifting others as you rise, staying faithful through challenges and becoming the person God created you to be.”
