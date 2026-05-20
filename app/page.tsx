@@ -1,12 +1,8 @@
 import Image from "next/image";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 export default function Home() {
   return (
     <>
-      <Header />
-
       <main className="min-h-screen bg-gray-50">
         {/* Hero Section */}
         <section className="relative h-[500px] w-full">
@@ -49,7 +45,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }
