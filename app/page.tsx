@@ -29,7 +29,7 @@ export default function Home() {
 
             <p className="mt-4 max-w-2xl text-lg">
               Discover quality sheet music for choirs, soloists,
-              and instrumental ensembles.
+              and instrumental ensembles. Explore new music.
             </p>
           </div>
         </section>
