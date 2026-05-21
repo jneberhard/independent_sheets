@@ -1,6 +1,9 @@
+import SearchBar from "./SearchBar";
 import Link from "next/link";
 import { auth } from "@/lib/auth/server";
 import LogoutButton from "./LogoutButton";
+import Image from "next/image";
+import MobileMenu from "./MobileMenu";
 
 const voicingLinks = [
   { label: "SATB", href: "/catalog/voicing/satb" },
@@ -25,96 +28,134 @@ export default async function Header() {
 
   const isLoggedIn = !!session?.user;
 
+
   return (
     <header className="border-b bg-white shadow-sm">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        {/* Left Side */}
-        <div className="flex items-center gap-10">
+      <div className="mx-auto max-w-7xl px-6 py-4">
+        {/* Top Row */}
+        <div className="flex items-center justify-between gap-6">
+
+          {/* Logo */}
           <Link
             href="/"
-            className="text-2xl font-bold tracking-tight text-gray-900"
+            className="flex items-center gap-3"
           >
-            Independent Sheets
+            <Image
+              src="/logo_1.png"
+              alt="Independent Sheets Logo"
+              width={0}
+              height={0}
+              sizes="100vw"
+              className="h-auto w-24"
+              priority
+            />
+
+            <span className="text-2xl font-bold tracking-tight text-gray-900">
+              Independent Sheets
+            </span>
           </Link>
 
-          <nav className="flex items-center gap-8">
-            {/* Voicing Dropdown */}
-            <div className="group relative">
-              <button className="text-blue-600 hover:text-blue-800 hover:underline">
-                Voicing
-              </button>
+          {/* Search */}
+          <div className="hidden flex-1 justify-center md:flex">
+            <SearchBar />
+          </div>
 
-              <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
-                {voicingLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+          {/* Right top header */}
+          <div className="hidden items-center gap-4 md:flex">
+            {!isLoggedIn && (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-md border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  Login
+                </Link>
 
-            {/* Instruments Dropdown */}
-            <div className="group relative">
-              <button className="text-blue-600 hover:text-blue-800 hover:underline">
-                Instruments
-              </button>
+                <Link
+                  href="/register"
+                  className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                >
+                  Register
+                </Link>
+              </>
+            )}
 
-              <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
-                {instrumentLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            {/* Arranger signup link */}
-            <div >
-              <button className="text-blue-600 hover:text-blue-800 hover:underline">
-                Arranger Sign Up
-              </button>
-            </div>
-          </nav>
+            {isLoggedIn && (
+              <>
+                <span className="text-sm font-medium text-green-600">
+                  Logged in as{" "}
+                  {session?.user?.name ??
+                  session?.user?.email}
+                </span>
+
+                <LogoutButton />
+              </>
+            )}
+          </div>
+          {/* MOBILE VIEW */}
+          <MobileMenu />
         </div>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-4">
-          {!isLoggedIn && (
-            <>
-              <Link
-                href="/login"
-                className="rounded-md border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-              >
-                Login
-              </Link>
-
-              <Link
-                href="/register"
-                className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-              >
-                Register
-              </Link>
-            </>
-          )}
-
-          {isLoggedIn && (
-            <>
-              <span className="text-sm font-medium text-green-600">
-                Logged in as{" "}
-                {session?.user?.name ?? session?.user?.email}
-              </span>
-
-              <LogoutButton />
-            </>
-          )}
+        {/* MOBILE SEARCH */}
+        <div className="mt-4 md:hidden">
+          <SearchBar />
         </div>
+
+        {/* BOTTOM NAV */}
+        <nav className="mt-2 hidden items-center justify-center gap-8 border-t pt-2 md:flex">
+          <Link
+            href="/"
+            className="text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Home
+          </Link>
+          {/* Voicing Dropdown */}
+          <div className="group relative">
+            <button className="text-blue-600 hover:text-blue-800 hover:underline">
+              Voicing
+            </button>
+
+            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
+              {voicingLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Instruments Dropdown */}
+          <div className="group relative">
+            <button className="text-blue-600 hover:text-blue-800 hover:underline">
+              Instruments
+            </button>
+
+            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
+              {instrumentLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          {/* Arranger signup link */}
+          <div>
+            <Link
+              href="/register/publisher"
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              Arranger/Publisher Sign Up
+            </Link>
+          </div>
+        </nav>
       </div>
     </header>
   );

@@ -19,9 +19,10 @@ export default function LoginPage() {
         email,
         password,
       });
-
-      router.refresh();
+      
       router.push("/dashboard");
+      router.refresh();
+
     } catch (error) {
       console.error("Login failed:", error);
 
