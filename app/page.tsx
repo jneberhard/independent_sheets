@@ -1,7 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 export default function Home() {
   const categories = [
@@ -130,8 +128,6 @@ export default function Home() {
 
   return (
     <>
-      <Header />
-
       <main className="min-h-screen" style={{ backgroundColor: "var(--background-ivory)" }}>
         {/* Hero Section */}
         <section className="relative h-[500px] w-full">
@@ -320,7 +316,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               {testimonials.map((testimonial, idx) => (
                 <div key={idx} className="card-music card-testimonial">
-                  <div className="quote-mark">"</div>
+                  <div className="quote-mark">&quot;</div>
                   <p className="mb-6 text-navy">
                     {testimonial.quote}
                   </p>
@@ -368,7 +364,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }
