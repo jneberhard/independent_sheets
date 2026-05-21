@@ -7,6 +7,11 @@ type SearchPageProps = {
   }>;
 };
 
+type SongResult = {
+  id: string;
+  title: string;
+};
+
 //read the search from the URL, queries database, returns matching titles
 export default async function SearchPage({
   searchParams,
@@ -15,17 +20,21 @@ export default async function SearchPage({
 
   const query = params.query ?? "";
 
-  const songs = await prisma.sheetMusic.findMany({
+  const songs: SongResult[] = await prisma.sheetMusic.findMany({
     where: {
-      title: {
-        contains: query,  //searches for titles containing the text
-        mode: "insensitive",   //make it case insensitive... home is the same as Home
-      },
+        title: {
+        contains: query,
+        mode: "insensitive",
+        },
     },
     orderBy: {
-      title: "asc",  //sort ascending order alphabetically
+        title: "asc",
     },
-  });
+    select: {
+        id: true,
+        title: true,
+    },
+    });
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
@@ -44,7 +53,7 @@ export default async function SearchPage({
           </p>
         )}
 
-        {songs.map((song) => (
+        {songs.map((song: SongResult) => (
           <Link
             key={song.id}
             href={`/music/${song.id}`}
