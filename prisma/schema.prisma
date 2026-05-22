@@ -7,8 +7,8 @@ datasource db {
 }
 
 enum RoleName {
-  CUSTOMER
-  ARTIST
+  USER
+  PUBLISHER
   ADMIN
 }
 
