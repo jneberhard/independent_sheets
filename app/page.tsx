@@ -362,7 +362,7 @@ export default function Home() {
             <p className="mb-6 text-lg">
               Join our community of composers and arrangers. Set your own prices and earn fair royalties.
             </p>
-            <Link href="/contribute" className="btn-outline inline-block">
+            Link href= "/contribute" className="btn-outline inline-block">
               Become a Contributor
             </Link>
           </div>
