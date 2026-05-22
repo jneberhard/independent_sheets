@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth/server";
+import CustomerNav from "@/components/authdashboard/CustomerNav";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,7 @@ export default async function DashboardPage() {
           This protected dashboard will eventually show purchases, uploads, and
           account tools.
         </p>
+        <CustomerNav />
       </div>
     </main>
   );
