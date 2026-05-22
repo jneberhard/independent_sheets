@@ -19,20 +19,21 @@ model Role {
 }
 
 model User {
-  id         String      @id @default(cuid())
-  email      String      @unique
+  id         String       @id @default(cuid())
+  email      String       @unique
   name       String?
   roleId     String
-  role       Role        @relation(fields: [roleId], references: [id])
+  role       Role         @relation(fields: [roleId], references: [id])
+  publisher  Publisher?
   sheetMusic SheetMusic[]
   purchases  Purchase[]
   contracts  Contract[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 }
 
 model SheetMusic {
-  id            String      @id @default(cuid())
+  id            String     @id @default(cuid())
   title         String
   description   String?
   priceCents    Int
@@ -40,10 +41,10 @@ model SheetMusic {
   previewMp3Url String?
   previewLink   String?
   artistId      String
-  artist        User        @relation(fields: [artistId], references: [id])
+  artist        User       @relation(fields: [artistId], references: [id])
   purchases     Purchase[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Purchase {
@@ -67,11 +68,47 @@ model Royalty {
 }
 
 model Contract {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   artistId       String
   royaltyPercent Float
   startDate      DateTime
   endDate        DateTime?
-  createdAt      DateTime @default(now())
-  artist         User     @relation(fields: [artistId], references: [id])
+  createdAt      DateTime  @default(now())
+  artist         User      @relation(fields: [artistId], references: [id])
+}
+
+model Publisher {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  firstName   String
+  lastName    String
+  displayName String
+
+  addressLine1  String
+  addressLine2  String?
+  city          String
+  stateProvince String
+  postalCode    String
+  country       String
+  phoneNumber   String?
+
+  biography         String?
+  websiteUrl        String?
+  youtubeUrl        String?
+  spotifyUrl        String?
+  primaryCategories String?
+  primaryVoicings   String?
+
+  uploadingOriginalWorks Boolean
+  uploadingArrangements  Boolean
+  ownsOrControlsRights   Boolean
+  acceptedAgreement      Boolean
+
+  paypalEmail            String?
+  preferredPaymentMethod String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

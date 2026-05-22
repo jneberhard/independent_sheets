@@ -1,26 +1,287 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Premium Classical Music Aesthetic */
+  --background-ivory: #F8F7F4;
+  --dark-navy: #1E293B;
+  --primary-purple: #6D28D9;
+  --secondary-gold: #C8A951;
+  --text-primary: #111827;
+  --text-muted: #64748B;
+  --card-white: #FFFFFF;
+  --border-light: #E5E7EB;
+
+  /* Background */
+  --background: #F8F7F4;
+  --foreground: #111827;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #F8F7F4;
   }
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Premium Buttons */
+.btn-primary {
+  background-color: var(--primary-purple);
+  color: var(--card-white);
+  font-weight: 600;
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
+}
+
+.btn-secondary {
+  background-color: var(--dark-navy);
+  color: var(--card-white);
+  font-weight: 600;
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #0f172a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--primary-purple);
+  font-weight: 600;
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.375rem;
+  border: 2px solid var(--primary-purple);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: var(--primary-purple);
+  color: var(--card-white);
+}
+
+/* Cards */
+.card-music {
+  background: var(--card-white);
+  border: 1px solid var(--border-light);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.card-music:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  border-color: var(--secondary-gold);
+}
+
+.card-category {
+  background: linear-gradient(135deg, var(--dark-navy) 0%, var(--primary-purple) 100%);
+  color: var(--card-white);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.card-category:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(30, 41, 59, 0.2);
+}
+
+.card-composer {
+  background: var(--card-white);
+  border: 1px solid var(--border-light);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.card-composer:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+}
+
+.stat-box {
+  text-align: center;
+  padding: 2rem;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-purple);
+  line-height: 1;
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.section-title {
+  color: var(--dark-navy);
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.badge-new {
+  display: inline-block;
+  background-color: var(--secondary-gold);
+  color: var(--dark-navy);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.composer-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--secondary-gold) 0%, var(--primary-purple) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--card-white);
+  font-weight: 700;
+  font-size: 1.75rem;
+  margin: 0 auto 1rem;
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--primary-purple);
+  color: var(--card-white);
+  font-weight: 700;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.quote-mark {
+  color: var(--secondary-gold);
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+/* Section Backgrounds */
+.section-dark {
+  background-color: var(--dark-navy);
+}
+
+.section-light {
+  background-color: var(--background-ivory);
+}
+
+.section-white {
+  background-color: var(--card-white);
+}
+
+/* Section Titles */
+.section-title-dark {
+  color: var(--card-white);
+}
+
+.section-title-light {
+  color: var(--dark-navy);
+}
+
+/* Text Colors */
+.text-white {
+  color: var(--card-white);
+}
+
+.text-navy {
+  color: var(--dark-navy);
+}
+
+.text-purple {
+  color: var(--primary-purple);
+}
+
+.text-gold {
+  color: var(--secondary-gold);
+}
+
+.text-muted-light {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Card Styles */
+.card-featured {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.1);
+}
+
+.card-dark-bg {
+  background-color: var(--card-white);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+}
+
+.card-composer-light {
+  background-color: var(--card-white);
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.08);
+  border: 1px solid var(--border-light);
+}
+
+.card-testimonial {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-left: 4px solid var(--secondary-gold);
+}
+
+/* Step Numbers */
+.step-number-gold {
+  background-color: var(--secondary-gold);
+  color: var(--dark-navy);
+}
+
+/* Header Styles */
+.heading-gold {
+  color: var(--secondary-gold);
+}
+
+/* CTA Gradient */
+.cta-gradient {
+  background: linear-gradient(135deg, var(--dark-navy) 0%, var(--primary-purple) 100%);
 }
