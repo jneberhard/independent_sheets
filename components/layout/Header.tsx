@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/server";
 import LogoutButton from "./LogoutButton";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
+import { getCurrentUser } from "@/lib/currentUser";
 
 const voicingLinks = [
   { label: "SATB", href: "/catalog/voicing/satb" },
@@ -26,7 +27,14 @@ const instrumentLinks = [
 export default async function Header() {
   const { data: session } = await auth.getSession();
 
+  const user = await getCurrentUser();
   const isLoggedIn = !!session?.user;
+  const dashboardLink =
+    user?.role.name === "ADMIN"
+      ? "/dashboard/admin"
+      : user?.role.name === "PUBLISHER"
+        ? "/dashboard/publisher"
+        : "/dashboard";
 
 
   return (
@@ -81,15 +89,22 @@ export default async function Header() {
             )}
 
             {isLoggedIn && (
-              <>
+              <div className="flex flex-col items-end gap-2">
                 <span className="text-sm font-medium text-green-600">
-                  Logged in as{" "}
-                  {session?.user?.name ??
-                  session?.user?.email}
+                  Logged in as {user?.name ?? user?.email}
                 </span>
 
-                <LogoutButton />
-              </>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={dashboardLink}
+                    className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                  >
+                    Dashboard
+                  </Link>
+
+                  <LogoutButton />
+                </div>
+              </div>
             )}
           </div>
           {/* MOBILE VIEW */}

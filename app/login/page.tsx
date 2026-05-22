@@ -19,8 +19,23 @@ export default function LoginPage() {
         email,
         password,
       });
-      
-      router.push("/dashboard");
+
+      const response = await fetch("/api/auth/me");
+
+      if (!response.ok) {
+        throw new Error("Failed to load user role");
+      }
+
+      const data = await response.json();
+
+      if (data.role === "PUBLISHER") {
+        router.push("/dashboard/publisher");
+      } else if (data.role === "ADMIN") {
+        router.push("/dashboard/admin");
+      } else {
+        router.push("/dashboard");
+      }
+
       router.refresh();
 
     } catch (error) {

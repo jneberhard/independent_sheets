@@ -21,6 +21,17 @@ export default function RegisterPage() {
       password,
     });
 
+    await fetch("/api/register/user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        name,
+      }),
+    });
+
     router.refresh();
     router.push("/dashboard");
   }

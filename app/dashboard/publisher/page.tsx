@@ -1,14 +1,18 @@
 import { redirect } from "next/navigation";
-
-import CustomerNav from "@/components/authdashboard/CustomerNav";
 import { getCurrentUser } from "@/lib/currentUser";
-export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+export default async function PublisherDashboardPage() {
   const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");
+  }
+
+  if (
+    user.role.name !== "PUBLISHER" &&
+    user.role.name !== "ADMIN"
+  ) {
+    redirect("/dashboard");
   }
 
   return (
@@ -21,10 +25,10 @@ export default async function DashboardPage() {
         </p>
 
         <p className="mt-2 text-gray-600">
-          This protected dashboard will eventually show purchases, uploads, and
+          This protected PUBLISHER dashboard will eventually show purchases, uploads, and
           account tools.
         </p>
-        <CustomerNav />
+        
       </div>
     </main>
   );
