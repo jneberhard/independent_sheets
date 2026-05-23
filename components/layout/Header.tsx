@@ -1,6 +1,5 @@
 import SearchBar from "./SearchBar";
 import Link from "next/link";
-import { auth } from "@/lib/auth/server";
 import LogoutButton from "./LogoutButton";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
@@ -25,10 +24,9 @@ const instrumentLinks = [
 ];
 
 export default async function Header() {
-  const { data: session } = await auth.getSession();
 
   const user = await getCurrentUser();
-  const isLoggedIn = !!session?.user;
+  const isLoggedIn = !!user;
   const dashboardLink =
     user?.role.name === "ADMIN"
       ? "/dashboard/admin"

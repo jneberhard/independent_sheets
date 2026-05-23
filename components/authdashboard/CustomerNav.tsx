@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth/server";
+import { getCurrentUser } from "@/lib/currentUser";
 
 export default async function CustomerNav() {
-    const { data: session } = await auth.getSession();
+    const user = await getCurrentUser();
 
-    const userId = session?.user?.id;
+    const userId = user?.id;
 
     return (
-        <nav>
+        <nav className="text-blue-800">
             <Link href={`/dashboard/purchases/${userId}`}>My Purchase History</Link>
         </nav>
     );
