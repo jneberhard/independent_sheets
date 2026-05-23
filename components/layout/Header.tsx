@@ -4,6 +4,7 @@ import LogoutButton from "./LogoutButton";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
 import { getCurrentUser } from "@/lib/currentUser";
+import ShoppingCart from "../cart/Cart";
 
 const voicingLinks = [
   { label: "SATB", href: "/catalog/voicing/satb" },
@@ -101,6 +102,7 @@ export default async function Header() {
                   </Link>
 
                   <LogoutButton />
+
                 </div>
               </div>
             )}
