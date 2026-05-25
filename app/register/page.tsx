@@ -35,6 +35,16 @@ export default function RegisterPage() {
     router.refresh();
     router.push("/dashboard");
   }
+  async function handleGoogleRegister() {
+  try {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+  } catch (error) {
+    console.error("Google registration failed:", error);
+  }
+}
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12">
@@ -85,6 +95,13 @@ export default function RegisterPage() {
             className="mt-6 w-full rounded-md bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
           >
             Create Account
+          </button>
+          <button
+            type="button"
+            onClick={handleGoogleRegister}
+            className="mt-4 w-full rounded-md border px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-100"
+          >
+            Continue with Google
           </button>
         </form>
 

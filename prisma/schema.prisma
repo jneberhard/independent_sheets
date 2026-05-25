@@ -38,6 +38,7 @@ model SheetMusic {
   description   String?
   priceCents    Int
   pdfUrl        String
+  imageUrl      String?
   previewMp3Url String?
   previewLink   String?
   artistId      String
