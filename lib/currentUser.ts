@@ -8,7 +8,7 @@ export async function getCurrentUser() {
     return null;
   }
 
-  return prisma.user.findUnique({
+  let user = await prisma.user.findUnique({
     where: {
       email: session.user.email,
     },
@@ -17,4 +17,32 @@ export async function getCurrentUser() {
       publisher: true,
     },
   });
+
+  if (user) {
+    return user;
+  }
+
+  const userRole = await prisma.role.findUnique({
+    where: {
+      name: "USER",
+    },
+  });
+
+  if (!userRole) {
+    throw new Error("USER role not found. Run pnpm prisma db seed.");
+  }
+
+  user = await prisma.user.create({
+    data: {
+      email: session.user.email,
+      name: session.user.name ?? session.user.email,
+      roleId: userRole.id,
+    },
+    include: {
+      role: true,
+      publisher: true,
+    },
+  });
+
+  return user;
 }
