@@ -44,6 +44,16 @@ export default function LoginPage() {
       router.push(`/register?email=${encodeURIComponent(email)}`);
     }
   }
+  async function handleGoogleLogin() {
+  try {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+  } catch (error) {
+    console.error("Google login failed:", error);
+  }
+}
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-6">
@@ -80,6 +90,13 @@ export default function LoginPage() {
           className="mt-6 w-full rounded-md bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
         >
           Login
+        </button>
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="mt-4 w-full rounded-md border px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-100"
+        >
+          Continue with Google
         </button>
 
         <p className="mt-6 text-center text-sm text-gray-600">

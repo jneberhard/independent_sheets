@@ -73,7 +73,7 @@ export default function PublisherRegisterPage() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/dashboard/publisher");
     router.refresh();
   }
 
@@ -197,30 +197,39 @@ export default function PublisherRegisterPage() {
             }
           />
 
-          <p className="rounded border border-gray-300 bg-gray-50 p-3 text-sm md:col-span-2">
+          <p className="flex items-start gap-2 text-sm md:col-span-2">
             For paid downloads, publishers receive <strong>75%</strong> of each sale. Independent Sheets retains{" "}
             <strong>25%</strong> as the platform fee.
           </p>
 
-          <div className="rounded border border-gray-300 bg-gray-50 p-3 text-sm md:col-span-2">
+          <div className="flex items-start gap-2 text-sm md:col-span-2">
             <p className="font-semibold">Royalty / Payment</p>
             <p className="mt-1">
               Current royalty split: <strong>Publisher 75%</strong> / <strong>Independent Sheets 25%</strong>.
             </p>
           </div>
 
-          <label className="md:col-span-2 flex items-start gap-2 text-sm">
-            <input type="checkbox" className="mt-1" />
+          <label className="flex items-start gap-2 text-sm md:col-span-2">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={formData.acceptedAgreement}
+              onChange={(event) =>
+                updateField("acceptedAgreement", event.target.checked)
+              }
+              required
+            />
             <span>
               I certify that I own the copyright to the uploaded material or have obtained
-              the necessary permissions/licenses to distribute and sell this music. I understand and agree to the
-              current royalty split: Publisher 75% / Independent Sheets 25%.
+              the necessary permissions/licenses to distribute and sell this music. I
+              understand and agree to the current royalty split: Publisher 75% /
+              Independent Sheets 25%.
             </span>
           </label>
 
           <button
-            type="button"
-            className="rounded bg-black px-4 py-2 text-white md:col-span-2"
+            type="submit"
+            className="rounded bg-black px-4 py-2 text-white transition hover:bg-blue-600 hover:shadow-lg md:col-span-2"
           >
             Create Publisher Account
           </button>
