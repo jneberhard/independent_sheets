@@ -8,6 +8,7 @@ import { authClient } from "@/lib/auth/client";
 export default function PublisherRegisterPage() {
 
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -48,33 +49,44 @@ export default function PublisherRegisterPage() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrorMessage("");
 
     if (!formData.acceptedAgreement) {
       alert("You must accept the publisher agreement.");
       return;
     }
 
-    await authClient.signUp.email({
-      name: `${formData.firstName} ${formData.lastName}`,
-      email: formData.email,
-      password: formData.password,
-    });
+    try {
+      await authClient.signUp.email({
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    const response = await fetch("/api/register/publisher", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+      const response = await fetch("/api/register/publisher", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (!response.ok) {
-      alert("Publisher account could not be created.");
-      return;
+      if (!response.ok) {
+        setErrorMessage("Publisher account could not be created.");
+        return;
+      }
+
+      router.push("/dashboard/publisher");
+      router.refresh();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to register right now.";
+      if (message.toLowerCase().includes("user already exists")) {
+        setErrorMessage("An account with this email already exists. Please log in.");
+        return;
+      }
+      setErrorMessage(message);
     }
-
-    router.push("/dashboard/publisher");
-    router.refresh();
   }
 
   return (
@@ -107,6 +119,11 @@ export default function PublisherRegisterPage() {
 
       <section className="mt-8">
         <h3 className="text-xl font-semibold">Publisher Signup Form</h3>
+        {errorMessage ? (
+          <p className="mt-2 rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700">
+            {errorMessage}
+          </p>
+        ) : null}
         <form onSubmit={handleSubmit} className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           <input className="rounded border p-2" placeholder="First Name *"
             value={formData.firstName}

@@ -8,6 +8,8 @@ export default function PublisherUploadForm() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [mp3File, setMp3File] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function uploadFile(file: File, folder: string) {
     const formData = new FormData();
@@ -29,52 +31,66 @@ export default function PublisherUploadForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrorMessage("");
 
     if (!pdfFile) {
-      alert("Please upload the full PDF sheet music file.");
+      setErrorMessage("Please upload the full PDF sheet music file.");
       return;
     }
 
     if (!imageFile) {
-      alert("Please upload image artwork or preview image.");
+      setErrorMessage("Please upload image artwork or preview image.");
       return;
     }
 
-    const pdfUpload = await uploadFile(pdfFile, "sheet-music");
-    const imageUpload = await uploadFile(imageFile, "images");
+    try {
+      setIsSubmitting(true);
+      const pdfUpload = await uploadFile(pdfFile, "sheet-music");
+      const imageUpload = await uploadFile(imageFile, "images");
 
-    let mp3Upload = null;
+      let mp3Upload = null;
 
-    if (mp3File) {
-      mp3Upload = await uploadFile(mp3File, "previews");
+      if (mp3File) {
+        mp3Upload = await uploadFile(mp3File, "previews");
+      }
+
+      const response = await fetch("/api/sheet-music", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          priceCents: Number(priceCents),
+          pdfUrl: pdfUpload.url,
+          imageUrl: imageUpload.url,
+          previewMp3Url: mp3Upload?.url ?? null,
+        }),
+      });
+
+      if (!response.ok) {
+        setErrorMessage("Sheet music could not be saved.");
+        return;
+      }
+
+      alert("Sheet music uploaded successfully.");
+
+      setTitle("");
+      setPriceCents("");
+      setPdfFile(null);
+      setMp3File(null);
+      setImageFile(null);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "File upload failed.";
+      if (message.toLowerCase().includes("blob")) {
+        setErrorMessage("Upload failed: Blob storage token is missing or invalid.");
+        return;
+      }
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const response = await fetch("/api/sheet-music", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        priceCents: Number(priceCents),
-        pdfUrl: pdfUpload.url,
-        imageUrl: imageUpload.url,
-        previewMp3Url: mp3Upload?.url ?? null,
-      }),
-    });
-
-    if (!response.ok) {
-      alert("Sheet music could not be saved.");
-      return;
-    }
-
-    alert("Sheet music uploaded successfully.");
-
-    setTitle("");
-    setPriceCents("");
-    setPdfFile(null);
-    setMp3File(null);
-    setImageFile(null);
   }
 
   return (
@@ -82,6 +98,11 @@ export default function PublisherUploadForm() {
       onSubmit={handleSubmit}
       className="mt-8 space-y-6 rounded-2xl border bg-white p-8 shadow-sm"
     >
+      {errorMessage ? (
+        <p className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          {errorMessage}
+        </p>
+      ) : null}
       <div>
         <label className="block text-sm font-semibold text-gray-700">
           Title
@@ -188,9 +209,10 @@ export default function PublisherUploadForm() {
 
       <button
         type="submit"
+        disabled={isSubmitting}
         className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-blue-600"
       >
-        Upload Sheet Music
+        {isSubmitting ? "Uploading..." : "Upload Sheet Music"}
       </button>
     </form>
   );

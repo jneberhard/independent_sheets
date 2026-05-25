@@ -43,6 +43,7 @@ model SheetMusic {
   previewLink   String?
   artistId      String
   artist        User       @relation(fields: [artistId], references: [id])
+  categories    SheetMusicCategory[]
   purchases     Purchase[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
@@ -112,4 +113,31 @@ model Publisher {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum CategoryGroup {
+  INSTRUMENT
+  VOICING
+  GENRE
+}
+
+model Category {
+  id          String               @id @default(cuid())
+  name        String
+  slug        String               @unique
+  group       CategoryGroup
+  sheetMusic  SheetMusicCategory[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([name, group])
+}
+
+model SheetMusicCategory {
+  sheetMusicId String
+  categoryId   String
+  sheetMusic   SheetMusic @relation(fields: [sheetMusicId], references: [id], onDelete: Cascade)
+  category     Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([sheetMusicId, categoryId])
 }
