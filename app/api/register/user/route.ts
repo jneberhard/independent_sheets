@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -20,26 +21,39 @@ export async function POST(request: Request) {
       );
     }
 
-    const userRole = await prisma.role.findUnique({
-      where: {
-        name: "USER",
-      },
-    });
+    const roles = await prisma.role.findMany();
+    const userRole =
+      roles.find((role) => role.name === "USER") ??
+      roles.find((role) => role.name === "CUSTOMER");
 
     if (!userRole) {
       return NextResponse.json(
-        { error: "USER role not found" },
+        { error: "No default user role found (USER/CUSTOMER)" },
         { status: 500 }
       );
     }
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        roleId: userRole.id,
-      },
-    });
+    let user;
+    try {
+      user = await prisma.user.create({
+        data: {
+          email,
+          name,
+          roleId: userRole.id,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        return NextResponse.json(
+          { error: "User already exists" },
+          { status: 400 }
+        );
+      }
+      throw error;
+    }
 
     return NextResponse.json(user);
   } catch (error) {
