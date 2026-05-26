@@ -31,6 +31,7 @@ type EditSheetMusicFormProps = {
   categories: CategoryForEdit[];
 };
 
+//sets up to Edit Sheet Music
 export default function EditSheetMusicForm({
   sheetMusic,
   voicings,

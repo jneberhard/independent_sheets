@@ -4,6 +4,7 @@ import LogoutButton from "./LogoutButton";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
 import { getCurrentUser } from "@/lib/currentUser";
+//for future use
 //import ShoppingCart from "../cart/Cart";
 import { prisma } from "@/lib/prisma";
 

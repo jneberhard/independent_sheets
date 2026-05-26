@@ -10,6 +10,7 @@ type EditSheetMusicPageProps = {
   }>;
 };
 
+//server page for the Edit Sheet Music
 export default async function EditSheetMusicPage({
   params,
 }: EditSheetMusicPageProps) {

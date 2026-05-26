@@ -4,6 +4,7 @@ import PublisherUploadForm from "@/components/publisher/PublisherUploadForm";
 import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma"
 
+//upload sheet music page
 export default async function PublisherUploadPage() {
   const user = await getCurrentUser();
 

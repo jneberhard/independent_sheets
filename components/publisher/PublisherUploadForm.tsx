@@ -15,6 +15,7 @@ type PublisherUploadFormProps = {
   genreCategories: Category[];
 };
 
+//to upload sheet music and related files
 export default function PublisherUploadForm({
   voicingCategories,
   instrumentCategories,

@@ -57,7 +57,7 @@ async function main() {
   });
 
   /*
-    Voicing Categories
+    Voicing Categories -
   */
 
   const voicings = [
@@ -70,6 +70,9 @@ async function main() {
     "Unison",
     "Choir",
     "Acapella",
+    "SATB/Piano",
+    "SSAA/Piano",
+    "TTBB/Piano",
   ];
 
   for (const category of voicings) {
@@ -90,7 +93,7 @@ async function main() {
   }
 
   /*
-    Instrument Categories
+    Instrument Categories -- add more if needed
   */
 
   const instruments = [
@@ -104,6 +107,9 @@ async function main() {
     "Guitar",
     "Organ",
     "Harp",
+    "Drums",
+    "Bass Guitar",
+    "Guitar Tabs",
   ];
 
   for (const category of instruments) {

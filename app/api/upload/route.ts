@@ -1,6 +1,7 @@
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 
+//API route the uploads files to Vercel Blob storage
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();

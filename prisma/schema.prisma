@@ -18,7 +18,6 @@ enum CategoryGroup {
   GENRE
 }
 
-
 model Role {
   id    String   @id @default(cuid())
   name  RoleName @unique
@@ -40,7 +39,7 @@ model User {
 }
 
 model SheetMusic {
-  id            String     @id @default(cuid())
+  id            String               @id @default(cuid())
   title         String
   description   String?
   priceCents    Int
@@ -49,12 +48,11 @@ model SheetMusic {
   previewMp3Url String?
   previewLink   String?
   artistId      String
-  artist        User       @relation(fields: [artistId], references: [id])
+  artist        User                 @relation(fields: [artistId], references: [id])
   categories    SheetMusicCategory[]
   purchases     Purchase[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  categories    SheetMusicCategory[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 }
 
 model Purchase {
@@ -137,12 +135,12 @@ model Category {
 }
 
 model SheetMusicCategory {
-  id           String     @id @default(cuid())
+  id           String @id @default(cuid())
   sheetMusicId String
   categoryId   String
 
-  sheetMusic   SheetMusic @relation(fields: [sheetMusicId], references: [id])
-  category     Category   @relation(fields: [categoryId], references: [id])
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
+  category   Category   @relation(fields: [categoryId], references: [id])
 
   @@unique([sheetMusicId, categoryId])
 }
