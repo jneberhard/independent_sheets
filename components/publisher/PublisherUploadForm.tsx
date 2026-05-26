@@ -57,14 +57,15 @@ export default function PublisherUploadForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrorMessage("");
 
     if (!pdfFile) {
-      alert("Please upload the full PDF sheet music file.");
+      setErrorMessage("Please upload the full PDF sheet music file.");
       return;
     }
 
     if (!imageFile) {
-      alert("Please upload image artwork or preview image.");
+      setErrorMessage("Please upload image artwork or preview image.");
       return;
     }
 
@@ -117,6 +118,11 @@ export default function PublisherUploadForm({
       onSubmit={handleSubmit}
       className="mt-8 space-y-6 rounded-2xl border bg-white p-8 shadow-sm"
     >
+      {errorMessage ? (
+        <p className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          {errorMessage}
+        </p>
+      ) : null}
       <div>
         <label className="block text-sm font-semibold text-gray-700">
           Title
@@ -246,9 +252,10 @@ export default function PublisherUploadForm({
 
       <button
         type="submit"
+        disabled={isSubmitting}
         className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-blue-600"
       >
-        Upload Sheet Music
+        {isSubmitting ? "Uploading..." : "Upload Sheet Music"}
       </button>
     </form>
   );
