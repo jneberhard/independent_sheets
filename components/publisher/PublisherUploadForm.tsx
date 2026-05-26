@@ -2,14 +2,39 @@
 
 import { useState } from "react";
 
-export default function PublisherUploadForm() {
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  group: "VOICING" | "INSTRUMENT" | "GENRE";
+};
+
+type PublisherUploadFormProps = {
+  voicingCategories: Category[];
+  instrumentCategories: Category[];
+  genreCategories: Category[];
+};
+
+//to upload sheet music and related files
+export default function PublisherUploadForm({
+  voicingCategories,
+  instrumentCategories,
+  genreCategories,
+}: PublisherUploadFormProps) {
   const [title, setTitle] = useState("");
   const [priceCents, setPriceCents] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [mp3File, setMp3File] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+
+  function toggleCategory(categoryId: string) {
+    setSelectedCategoryIds((current) =>
+      current.includes(categoryId)
+        ? current.filter((id) => id !== categoryId)
+        : [...current, categoryId]
+    );
+  }
 
   async function uploadFile(file: File, folder: string) {
     const formData = new FormData();
@@ -31,66 +56,59 @@ export default function PublisherUploadForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setErrorMessage("");
 
     if (!pdfFile) {
-      setErrorMessage("Please upload the full PDF sheet music file.");
+      alert("Please upload the full PDF sheet music file.");
       return;
     }
 
     if (!imageFile) {
-      setErrorMessage("Please upload image artwork or preview image.");
+      alert("Please upload image artwork or preview image.");
       return;
     }
 
-    try {
-      setIsSubmitting(true);
-      const pdfUpload = await uploadFile(pdfFile, "sheet-music");
-      const imageUpload = await uploadFile(imageFile, "images");
-
-      let mp3Upload = null;
-
-      if (mp3File) {
-        mp3Upload = await uploadFile(mp3File, "previews");
-      }
-
-      const response = await fetch("/api/sheet-music", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          priceCents: Number(priceCents),
-          pdfUrl: pdfUpload.url,
-          imageUrl: imageUpload.url,
-          previewMp3Url: mp3Upload?.url ?? null,
-        }),
-      });
-
-      if (!response.ok) {
-        setErrorMessage("Sheet music could not be saved.");
-        return;
-      }
-
-      alert("Sheet music uploaded successfully.");
-
-      setTitle("");
-      setPriceCents("");
-      setPdfFile(null);
-      setMp3File(null);
-      setImageFile(null);
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "File upload failed.";
-      if (message.toLowerCase().includes("blob")) {
-        setErrorMessage("Upload failed: Blob storage token is missing or invalid.");
-        return;
-      }
-      setErrorMessage(message);
-    } finally {
-      setIsSubmitting(false);
+    if (selectedCategoryIds.length === 0) {
+      alert("Please choose at least one category.");
+      return;
     }
+
+    const pdfUpload = await uploadFile(pdfFile, "sheet-music");
+    const imageUpload = await uploadFile(imageFile, "images");
+
+    let mp3Upload = null;
+
+    if (mp3File) {
+      mp3Upload = await uploadFile(mp3File, "previews");
+    }
+
+    const response = await fetch("/api/sheet-music", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        priceCents: Number(priceCents),
+        pdfUrl: pdfUpload.url,
+        imageUrl: imageUpload.url,
+        previewMp3Url: mp3Upload?.url ?? null,
+        categoryIds: selectedCategoryIds,
+      }),
+    });
+
+    if (!response.ok) {
+      alert("Sheet music could not be saved.");
+      return;
+    }
+
+    alert("Sheet music uploaded successfully.");
+
+    setTitle("");
+    setPriceCents("");
+    setSelectedCategoryIds([]);
+    setPdfFile(null);
+    setMp3File(null);
+    setImageFile(null);
   }
 
   return (
@@ -98,11 +116,6 @@ export default function PublisherUploadForm() {
       onSubmit={handleSubmit}
       className="mt-8 space-y-6 rounded-2xl border bg-white p-8 shadow-sm"
     >
-      {errorMessage ? (
-        <p className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-          {errorMessage}
-        </p>
-      ) : null}
       <div>
         <label className="block text-sm font-semibold text-gray-700">
           Title
@@ -207,13 +220,73 @@ export default function PublisherUploadForm() {
         </div>
       </div>
 
+      <CategorySection
+        title="Voicings"
+        categories={voicingCategories}
+        selectedCategoryIds={selectedCategoryIds}
+        toggleCategory={toggleCategory}
+      />
+
+      {/* INSTRUMENTS */}
+      <CategorySection
+        title="Instruments"
+        categories={instrumentCategories}
+        selectedCategoryIds={selectedCategoryIds}
+        toggleCategory={toggleCategory}
+      />
+
+      {/* GENRES */}
+      <CategorySection
+        title="Genres"
+        categories={genreCategories}
+        selectedCategoryIds={selectedCategoryIds}
+        toggleCategory={toggleCategory}
+      />
+
       <button
         type="submit"
-        disabled={isSubmitting}
         className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-blue-600"
       >
-        {isSubmitting ? "Uploading..." : "Upload Sheet Music"}
+        Upload Sheet Music
       </button>
     </form>
   );
 }
+
+function CategorySection({
+  title,
+  categories,
+  selectedCategoryIds,
+  toggleCategory,
+}: {
+  title: string;
+  categories: Category[];
+  selectedCategoryIds: string[];
+  toggleCategory: (categoryId: string) => void;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold text-gray-700">
+        {title}
+      </label>
+
+      <div className="mt-2 grid gap-2 rounded-md border bg-gray-50 p-3 md:grid-cols-3">
+        {categories.map((category) => (
+          <label
+            key={category.id}
+            className="flex items-center gap-2 text-sm text-gray-700"
+          >
+            <input
+              type="checkbox"
+              checked={selectedCategoryIds.includes(category.id)}
+              onChange={() => toggleCategory(category.id)}
+            />
+
+            {category.name}
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+

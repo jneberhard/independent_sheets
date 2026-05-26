@@ -12,6 +12,12 @@ enum RoleName {
   ADMIN
 }
 
+enum CategoryGroup {
+  VOICING
+  INSTRUMENT
+  GENRE
+}
+
 model Role {
   id    String   @id @default(cuid())
   name  RoleName @unique
@@ -33,7 +39,7 @@ model User {
 }
 
 model SheetMusic {
-  id            String     @id @default(cuid())
+  id            String               @id @default(cuid())
   title         String
   description   String?
   priceCents    Int
@@ -42,11 +48,11 @@ model SheetMusic {
   previewMp3Url String?
   previewLink   String?
   artistId      String
-  artist        User       @relation(fields: [artistId], references: [id])
+  artist        User                 @relation(fields: [artistId], references: [id])
   categories    SheetMusicCategory[]
   purchases     Purchase[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 }
 
 model Purchase {
@@ -115,29 +121,26 @@ model Publisher {
   updatedAt DateTime @updatedAt
 }
 
-enum CategoryGroup {
-  INSTRUMENT
-  VOICING
-  GENRE
-}
-
 model Category {
-  id          String               @id @default(cuid())
-  name        String
-  slug        String               @unique
-  group       CategoryGroup
-  sheetMusic  SheetMusicCategory[]
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+  id        String        @id @default(cuid())
+  name      String
+  slug      String
+  group     CategoryGroup
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  @@unique([name, group])
+  sheetMusicCategories SheetMusicCategory[]
+
+  @@unique([group, slug])
 }
 
 model SheetMusicCategory {
+  id           String @id @default(cuid())
   sheetMusicId String
   categoryId   String
-  sheetMusic   SheetMusic @relation(fields: [sheetMusicId], references: [id], onDelete: Cascade)
-  category     Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  @@id([sheetMusicId, categoryId])
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
+  category   Category   @relation(fields: [categoryId], references: [id])
+
+  @@unique([sheetMusicId, categoryId])
 }

@@ -4,29 +4,30 @@ import LogoutButton from "./LogoutButton";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
 import { getCurrentUser } from "@/lib/currentUser";
-import ShoppingCart from "../cart/Cart";
+//for future use
+//import ShoppingCart from "../cart/Cart";
+import { prisma } from "@/lib/prisma";
 
-const voicingLinks = [
-  { label: "SATB", href: "/catalog/voicing/satb" },
-  { label: "SSAA", href: "/catalog/voicing/ssaa" },
-  { label: "TTBB", href: "/catalog/voicing/ttbb" },
-  { label: "Piano/Vocal", href: "/catalog/voicing/piano-vocal" },
-];
-
-const instrumentLinks = [
-  { label: "Trumpet", href: "/catalog/instrument/trumpet" },
-  { label: "Flute", href: "/catalog/instrument/flute" },
-  { label: "Clarinet", href: "/catalog/instrument/clarinet" },
-  { label: "Saxophone", href: "/catalog/instrument/saxophone" },
-  { label: "Trombone", href: "/catalog/instrument/trombone" },
-  { label: "Violin", href: "/catalog/instrument/violin" },
-  { label: "Viola", href: "/catalog/instrument/viola" },
-  { label: "Piano", href: "/catalog/instrument/piano" },
-];
 
 export default async function Header() {
 
   const user = await getCurrentUser();
+
+  const voicingLinks = await prisma.category.findMany({
+    where: { group: "VOICING" },
+    orderBy: { name: "asc" },
+  });
+
+  const instrumentLinks = await prisma.category.findMany({
+    where: { group: "INSTRUMENT" },
+    orderBy: { name: "asc" },
+  });
+
+  const genreLinks = await prisma.category.findMany({
+    where: { group: "GENRE" },
+    orderBy: { name: "asc" },
+  });
+
   const isLoggedIn = !!user;
   const dashboardLink =
     user?.role.name === "ADMIN"
@@ -133,11 +134,11 @@ export default async function Header() {
             <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
               {voicingLinks.map((link) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  key={link.id}
+                  href={`/catalog/voicing/${link.slug}`}
                   className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
                 >
-                  {link.label}
+                  {link.name}
                 </Link>
               ))}
             </div>
@@ -152,15 +153,35 @@ export default async function Header() {
             <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
               {instrumentLinks.map((link) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  key={link.id}
+                  href={`/catalog/instrument/${link.slug}`}
                   className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
                 >
-                  {link.label}
+                  {link.name}
                 </Link>
               ))}
             </div>
           </div>
+
+          {/* Genres Dropdown */}
+          <div className="group relative">
+            <button className="text-blue-600 hover:text-blue-800 hover:underline">
+              Genres
+            </button>
+
+            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
+              {genreLinks.map((link) => (
+                <Link
+                  key={link.id}
+                  href={`/catalog/genre/${link.slug}`}
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
           {/* Arranger signup link */}
           <div>
             <Link
