@@ -289,5 +289,4 @@ function CategorySection({
     </div>
   );
 }
-=========
->>>>>>>>> Temporary merge branch 2
+
