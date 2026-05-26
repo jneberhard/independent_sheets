@@ -4,24 +4,9 @@ import LogoutButton from "./LogoutButton";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
 import { getCurrentUser } from "@/lib/currentUser";
+//import ShoppingCart from "../cart/Cart";
+import { prisma } from "@/lib/prisma";
 
-const voicingLinks = [
-  { label: "SATB", href: "/catalog/voicing/satb" },
-  { label: "SSAA", href: "/catalog/voicing/ssaa" },
-  { label: "TTBB", href: "/catalog/voicing/ttbb" },
-  { label: "Piano/Vocal", href: "/catalog/voicing/piano-vocal" },
-];
-
-const instrumentLinks = [
-  { label: "Trumpet", href: "/catalog/instrument/trumpet" },
-  { label: "Flute", href: "/catalog/instrument/flute" },
-  { label: "Clarinet", href: "/catalog/instrument/clarinet" },
-  { label: "Saxophone", href: "/catalog/instrument/saxophone" },
-  { label: "Trombone", href: "/catalog/instrument/trombone" },
-  { label: "Violin", href: "/catalog/instrument/violin" },
-  { label: "Viola", href: "/catalog/instrument/viola" },
-  { label: "Piano", href: "/catalog/instrument/piano" },
-];
 
 export default async function Header() {
 
