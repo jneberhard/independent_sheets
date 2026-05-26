@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, RoleName } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -21,14 +21,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const roles = await prisma.role.findMany();
-    const userRole =
-      roles.find((role) => role.name === "USER") ??
-      roles.find((role) => role.name === "CUSTOMER");
+    const userRole = await prisma.role.findUnique({
+      where: {
+        name: RoleName.USER,
+      },
+    });
 
     if (!userRole) {
       return NextResponse.json(
-        { error: "No default user role found (USER/CUSTOMER)" },
+        { error: "No default user role found (USER)" },
         { status: 500 }
       );
     }

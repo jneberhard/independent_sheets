@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth/server";
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, RoleName } from "@prisma/client";
 
 export async function getCurrentUser() {
   const { data: session } = await auth.getSession();
@@ -23,14 +23,15 @@ export async function getCurrentUser() {
     return user;
   }
 
-  const roles = await prisma.role.findMany();
-  const userRole =
-    roles.find((role) => role.name === "USER") ??
-    roles.find((role) => role.name === "CUSTOMER");
+  const userRole = await prisma.role.findUnique({
+    where: {
+      name: RoleName.USER,
+    },
+  });
 
   if (!userRole) {
     throw new Error(
-      "No default user role found (USER/CUSTOMER). Run pnpm prisma db seed."
+      "No default user role found (USER). Run pnpm prisma db seed."
     );
   }
 
