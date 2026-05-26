@@ -153,28 +153,39 @@ async function main() {
   ];
 
   for (const song of demoSongs) {
-    const savedSong = await prisma.sheetMusic.upsert({
-      where: { pdfUrl: song.pdfUrl },
-      update: {
-        title: song.title,
-        description: song.description,
-        priceCents: song.priceCents,
-        imageUrl: song.imageUrl,
-        previewMp3Url: song.previewMp3Url,
-        previewLink: song.previewLink,
+    const existingSong = await prisma.sheetMusic.findFirst({
+      where: {
         artistId: demoUser.id,
-      },
-      create: {
         title: song.title,
-        description: song.description,
-        priceCents: song.priceCents,
-        pdfUrl: song.pdfUrl,
-        imageUrl: song.imageUrl,
-        previewMp3Url: song.previewMp3Url,
-        previewLink: song.previewLink,
-        artistId: demoUser.id,
       },
     });
+
+    const savedSong = existingSong
+      ? await prisma.sheetMusic.update({
+          where: { id: existingSong.id },
+          data: {
+            title: song.title,
+            description: song.description,
+            priceCents: song.priceCents,
+            pdfUrl: song.pdfUrl,
+            imageUrl: song.imageUrl,
+            previewMp3Url: song.previewMp3Url,
+            previewLink: song.previewLink,
+            artistId: demoUser.id,
+          },
+        })
+      : await prisma.sheetMusic.create({
+          data: {
+            title: song.title,
+            description: song.description,
+            priceCents: song.priceCents,
+            pdfUrl: song.pdfUrl,
+            imageUrl: song.imageUrl,
+            previewMp3Url: song.previewMp3Url,
+            previewLink: song.previewLink,
+            artistId: demoUser.id,
+          },
+        });
 
     await prisma.sheetMusicCategory.createMany({
       data: song.categoryIds.map((categoryId) => ({
