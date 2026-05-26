@@ -12,6 +12,13 @@ enum RoleName {
   ADMIN
 }
 
+enum CategoryGroup {
+  VOICING
+  INSTRUMENT
+  GENRE
+}
+
+
 model Role {
   id    String   @id @default(cuid())
   name  RoleName @unique
@@ -46,6 +53,7 @@ model SheetMusic {
   purchases     Purchase[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+  categories    SheetMusicCategory[]
 }
 
 model Purchase {
@@ -112,4 +120,28 @@ model Publisher {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String        @id @default(cuid())
+  name      String
+  slug      String
+  group     CategoryGroup
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  sheetMusicCategories SheetMusicCategory[]
+
+  @@unique([group, slug])
+}
+
+model SheetMusicCategory {
+  id           String     @id @default(cuid())
+  sheetMusicId String
+  categoryId   String
+
+  sheetMusic   SheetMusic @relation(fields: [sheetMusicId], references: [id])
+  category     Category   @relation(fields: [categoryId], references: [id])
+
+  @@unique([sheetMusicId, categoryId])
 }

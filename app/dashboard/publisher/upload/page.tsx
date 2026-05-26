@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import PublisherUploadForm from "@/components/publisher/PublisherUploadForm";
 import { getCurrentUser } from "@/lib/currentUser";
+import { prisma } from "@/lib/prisma"
 
 export default async function PublisherUploadPage() {
   const user = await getCurrentUser();
@@ -14,6 +15,29 @@ export default async function PublisherUploadPage() {
     redirect("/dashboard");
   }
 
+  const categories = await prisma.category.findMany({
+    orderBy: [
+      {
+        group: "asc",
+      },
+      {
+        name: "asc",
+      },
+    ],
+  });
+
+  const voicingCategories = categories.filter(
+    (category) => category.group === "VOICING"
+  );
+
+  const instrumentCategories = categories.filter(
+    (category) => category.group === "INSTRUMENT"
+  );
+
+  const genreCategories = categories.filter(
+    (category) => category.group === "GENRE"
+  );
+
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="mx-auto max-w-5xl rounded-2xl border bg-white p-8 shadow-sm">
@@ -25,7 +49,11 @@ export default async function PublisherUploadPage() {
           Add a PDF, preview MP3, artwork image, title, description, and price.
         </p>
 
-        <PublisherUploadForm />
+        <PublisherUploadForm
+          voicingCategories={voicingCategories}
+          instrumentCategories={instrumentCategories}
+          genreCategories={genreCategories}
+        />
       </div>
     </main>
   );

@@ -2,12 +2,40 @@
 
 import { useState } from "react";
 
-export default function PublisherUploadForm() {
+
+
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  group: "VOICING" | "INSTRUMENT" | "GENRE";
+};
+
+type PublisherUploadFormProps = {
+  voicingCategories: Category[];
+  instrumentCategories: Category[];
+  genreCategories: Category[];
+};
+
+export default function PublisherUploadForm({
+  voicingCategories,
+  instrumentCategories,
+  genreCategories,
+}: PublisherUploadFormProps) {
   const [title, setTitle] = useState("");
   const [priceCents, setPriceCents] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [mp3File, setMp3File] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+
+  function toggleCategory(categoryId: string) {
+    setSelectedCategoryIds((current) =>
+      current.includes(categoryId)
+        ? current.filter((id) => id !== categoryId)
+        : [...current, categoryId]
+    );
+  }
 
   async function uploadFile(file: File, folder: string) {
     const formData = new FormData();
@@ -40,6 +68,11 @@ export default function PublisherUploadForm() {
       return;
     }
 
+    if (selectedCategoryIds.length === 0) {
+      alert("Please choose at least one category.");
+      return;
+    }
+
     const pdfUpload = await uploadFile(pdfFile, "sheet-music");
     const imageUpload = await uploadFile(imageFile, "images");
 
@@ -60,6 +93,7 @@ export default function PublisherUploadForm() {
         pdfUrl: pdfUpload.url,
         imageUrl: imageUpload.url,
         previewMp3Url: mp3Upload?.url ?? null,
+        categoryIds: selectedCategoryIds,
       }),
     });
 
@@ -72,6 +106,7 @@ export default function PublisherUploadForm() {
 
     setTitle("");
     setPriceCents("");
+    setSelectedCategoryIds([]);
     setPdfFile(null);
     setMp3File(null);
     setImageFile(null);
@@ -186,6 +221,29 @@ export default function PublisherUploadForm() {
         </div>
       </div>
 
+      <CategorySection
+        title="Voicings"
+        categories={voicingCategories}
+        selectedCategoryIds={selectedCategoryIds}
+        toggleCategory={toggleCategory}
+      />
+
+      {/* INSTRUMENTS */}
+      <CategorySection
+        title="Instruments"
+        categories={instrumentCategories}
+        selectedCategoryIds={selectedCategoryIds}
+        toggleCategory={toggleCategory}
+      />
+
+      {/* GENRES */}
+      <CategorySection
+        title="Genres"
+        categories={genreCategories}
+        selectedCategoryIds={selectedCategoryIds}
+        toggleCategory={toggleCategory}
+      />
+
       <button
         type="submit"
         className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-blue-600"
@@ -193,5 +251,42 @@ export default function PublisherUploadForm() {
         Upload Sheet Music
       </button>
     </form>
+  );
+}
+
+function CategorySection({
+  title,
+  categories,
+  selectedCategoryIds,
+  toggleCategory,
+}: {
+  title: string;
+  categories: Category[];
+  selectedCategoryIds: string[];
+  toggleCategory: (categoryId: string) => void;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold text-gray-700">
+        {title}
+      </label>
+
+      <div className="mt-2 grid gap-2 rounded-md border bg-gray-50 p-3 md:grid-cols-3">
+        {categories.map((category) => (
+          <label
+            key={category.id}
+            className="flex items-center gap-2 text-sm text-gray-700"
+          >
+            <input
+              type="checkbox"
+              checked={selectedCategoryIds.includes(category.id)}
+              onChange={() => toggleCategory(category.id)}
+            />
+
+            {category.name}
+          </label>
+        ))}
+      </div>
+    </div>
   );
 }
