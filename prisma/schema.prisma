@@ -50,6 +50,7 @@ model SheetMusic {
   previewLink   String?
   artistId      String
   artist        User       @relation(fields: [artistId], references: [id])
+  categories    SheetMusicCategory[]
   purchases     Purchase[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt

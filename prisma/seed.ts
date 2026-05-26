@@ -1,6 +1,6 @@
 import { PrismaClient, CategoryGroup, RoleName } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
-import { Client, neonConfig } from "@neondatabase/serverless"; 
+import { Client, neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
 import "dotenv/config";
 
