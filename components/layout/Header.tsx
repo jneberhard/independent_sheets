@@ -3,32 +3,46 @@ import Link from "next/link";
 import LogoutButton from "./LogoutButton";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
+
 import { getCurrentUser } from "@/lib/currentUser";
-//for future use
-//import ShoppingCart from "../cart/Cart";
 import { prisma } from "@/lib/prisma";
 
-
 export default async function Header() {
-
+  // Get current logged in user
   const user = await getCurrentUser();
 
+  // Load categories from database
   const voicingLinks = await prisma.category.findMany({
-    where: { group: "VOICING" },
-    orderBy: { name: "asc" },
+    where: {
+      group: "VOICING",
+    },
+    orderBy: {
+      name: "asc",
+    },
   });
 
   const instrumentLinks = await prisma.category.findMany({
-    where: { group: "INSTRUMENT" },
-    orderBy: { name: "asc" },
+    where: {
+      group: "INSTRUMENT",
+    },
+    orderBy: {
+      name: "asc",
+    },
   });
 
   const genreLinks = await prisma.category.findMany({
-    where: { group: "GENRE" },
-    orderBy: { name: "asc" },
+    where: {
+      group: "GENRE",
+    },
+    orderBy: {
+      name: "asc",
+    },
   });
 
+  // Logged in status
   const isLoggedIn = !!user;
+
+  // Dashboard link based on role
   const dashboardLink =
     user?.role.name === "ADMIN"
       ? "/dashboard/admin"
@@ -36,14 +50,14 @@ export default async function Header() {
         ? "/dashboard/publisher"
         : "/dashboard";
 
-
   return (
-    <header className="border-b bg-white shadow-sm">
-      <div className="mx-auto max-w-7xl px-6 py-4">
-        {/* Top Row */}
-        <div className="flex items-center justify-between gap-6">
+    <header className="border-b border-[var(--secondary)] bg-[var(--primary)] text-white shadow-sm">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
 
-          {/* Logo */}
+        {/* Top Header Row */}
+        <div className="flex items-center justify-between gap-4">
+
+          {/* Logo Section */}
           <Link
             href="/"
             className="flex items-center gap-3"
@@ -51,87 +65,134 @@ export default async function Header() {
             <Image
               src="/logo_1.png"
               alt="Independent Sheets Logo"
-              width={0}
-              height={0}
-              sizes="100vw"
-              className="h-auto w-24"
+              width={96}
+              height={96}
+              sizes="96px"
+              className="h-auto w-20 sm:w-24"
+              style={{ height: "auto" }}
               priority
             />
 
-            <span className="text-2xl font-bold tracking-tight text-gray-900">
+            {/* Hide large text on very small screens */}
+            <span className="hidden text-3xl font-bold tracking-tight text-white sm:inline">
               Independent Sheets
             </span>
           </Link>
 
-          {/* Search */}
+          {/* Desktop Search */}
           <div className="hidden flex-1 justify-center md:flex">
             <SearchBar />
           </div>
 
-          {/* Right top header */}
+          {/* Desktop Auth Section */}
           <div className="hidden items-center gap-4 md:flex">
-            {!isLoggedIn && (
+            {!isLoggedIn ? (
               <>
                 <Link
                   href="/login"
-                  className="rounded-md border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  className="rounded-md border border-white px-4 py-2 text-sm font-medium text-white transition hover:bg-white hover:text-[var(--primary)]"
                 >
                   Login
                 </Link>
 
                 <Link
                   href="/register"
-                  className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                  className="rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
                 >
                   Register
                 </Link>
               </>
-            )}
-
-            {isLoggedIn && (
+            ) : (
               <div className="flex flex-col items-end gap-2">
-                <span className="text-sm font-medium text-green-600">
-                  Logged in as {user?.name ?? user?.email}
+                <span className="text-sm font-medium text-[var(--accent)]">
+                  Logged in as {user.name ?? user.email}
                 </span>
 
                 <div className="flex items-center gap-3">
                   <Link
                     href={dashboardLink}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                    className="text-sm font-medium text-[var(--background)] hover:text-[var(--accent)] hover:underline"
                   >
                     Dashboard
                   </Link>
 
                   <LogoutButton />
-
                 </div>
               </div>
             )}
           </div>
-          {/* MOBILE VIEW */}
-          <MobileMenu />
+
+          {/* Mobile Section */}
+          <div className="flex items-center gap-3 md:hidden">
+            <div className="flex flex-col items-end gap-1">
+              {/* Hamburger Menu */}
+              <MobileMenu
+                voicingLinks={voicingLinks}
+                instrumentLinks={instrumentLinks}
+                genreLinks={genreLinks}
+              />
+
+              {/* Logged In Mobile View */}
+              {isLoggedIn ? (
+                <>
+                  <span className="max-w-[160px] truncate text-xs font-medium text-[var(--accent)]">
+                    Logged in as {user.name ?? user.email}
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={dashboardLink}
+                      className="text-xs font-medium text-[var(--background)] hover:text-[var(--accent)] hover:underline"
+                    >
+                      Dashboard
+                    </Link>
+
+                    <LogoutButton />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="rounded-md border border-white px-3 py-1 text-xs font-medium text-white transition hover:bg-white hover:text-[var(--primary)]"
+                  >
+                    Login
+                  </Link>
+
+                  <Link
+                    href="/register"
+                    className="text-xs font-medium text-[var(--background)] hover:text-[var(--accent)] hover:underline"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* MOBILE SEARCH */}
+        {/* Mobile Search */}
         <div className="mt-4 md:hidden">
           <SearchBar />
         </div>
 
-        {/* BOTTOM NAV */}
-        <nav className="mt-2 hidden items-center justify-center gap-8 border-t pt-2 md:flex">
+        {/* Desktop Bottom Navigation */}
+        <nav className="mt-3 hidden items-center justify-center gap-8 border-t border-[var(--secondary)] pt-3 md:flex">
+          {/* Home */}
           <Link
             href="/"
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+            className="text-[var(--background)] hover:text-[var(--accent)] hover:underline"
           >
             Home
           </Link>
+
           {/* Voicing Dropdown */}
           <div className="group relative">
-            <button className="text-blue-600 hover:text-blue-800 hover:underline">
+            <button className="text-[var(--background)] hover:text-[var(--accent)] hover:underline">
               Voicing
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
+            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
               {voicingLinks.map((link) => (
                 <Link
                   key={link.id}
@@ -144,13 +205,13 @@ export default async function Header() {
             </div>
           </div>
 
-          {/* Instruments Dropdown */}
+          {/* Instrument Dropdown */}
           <div className="group relative">
-            <button className="text-blue-600 hover:text-blue-800 hover:underline">
+            <button className="text-[var(--background)] hover:text-[var(--accent)] hover:underline">
               Instruments
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
+            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
               {instrumentLinks.map((link) => (
                 <Link
                   key={link.id}
@@ -163,13 +224,13 @@ export default async function Header() {
             </div>
           </div>
 
-          {/* Genres Dropdown */}
+          {/* Genre Dropdown */}
           <div className="group relative">
-            <button className="text-blue-600 hover:text-blue-800 hover:underline">
+            <button className="text-[var(--background)] hover:text-[var(--accent)] hover:underline">
               Genres
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-md border bg-white p-2 shadow-lg group-hover:block">
+            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
               {genreLinks.map((link) => (
                 <Link
                   key={link.id}
@@ -182,15 +243,13 @@ export default async function Header() {
             </div>
           </div>
 
-          {/* Arranger signup link */}
-          <div>
-            <Link
-              href="/register/publisher"
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              Arranger/Publisher Sign Up
-            </Link>
-          </div>
+          {/* Publisher Signup */}
+          <Link
+            href="/register/publisher"
+            className="text-[var(--background)] hover:text-[var(--accent)] hover:underline"
+          >
+            Arranger/Publisher Sign Up
+          </Link>
         </nav>
       </div>
     </header>
