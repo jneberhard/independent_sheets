@@ -1,6 +1,7 @@
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 
+//API route the uploads files to Vercel Blob storage
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -22,8 +23,13 @@ export async function POST(request: Request) {
       ? `${folder}/${filename}`
       : filename;
 
+    const access =
+      folder === "images" || folder === "previews"
+        ? "public"
+        : "public";
+
     const blob = await put(pathname, file, {
-      access: "private",
+      access,
     });
 
     return NextResponse.json({
