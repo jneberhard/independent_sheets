@@ -40,10 +40,8 @@ export default function RegisterPage() {
       // Change this so it logs them in in the future
       router.push("/");
     } catch (error: any) {
-      const errorMessage = error?.message?.toLowerCase() || "";
-      // console.log(errorMessage);
-
-      if (errorMessage.includes("user already exists")) {
+      
+      if (error && error.message) {
         setError("This email is already in use. If you've created an account with Google, please use the Google button.");
       } else {
         setError("An unexpected error occured. Please try again.");
