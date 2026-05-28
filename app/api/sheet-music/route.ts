@@ -23,16 +23,41 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
+    const categoryIds = Array.isArray(body.categoryIds)
+      ? body.categoryIds.filter((categoryId: unknown) => {
+          return typeof categoryId === "string" && categoryId.length > 0;
+        })
+      : [];
+
+    if (categoryIds.length === 0) {
+      return NextResponse.json(
+        { error: "At least one category is required" },
+        { status: 400 }
+      );
+    }
+
     const sheetMusic = await prisma.sheetMusic.create({
       data: {
         title: body.title,
         description: body.description || null,
-        priceCents: body.priceCents,
+        priceCents: Number(body.priceCents),
         pdfUrl: body.pdfUrl,
         imageUrl: body.imageUrl || null,
         previewMp3Url: body.previewMp3Url || null,
         previewLink: body.previewLink || null,
         artistId: user.id,
+        categories: {
+          create: categoryIds.map((categoryId: string) => ({
+            categoryId,
+          })),
+        },
+      },
+      include: {
+        categories: {
+          include: {
+            category: true,
+          },
+        },
       },
     });
 
