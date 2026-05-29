@@ -4,11 +4,15 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth/client";
+import ErrorText from "@/components/forms/ErrorText";
 
 export default function PublisherRegisterPage() {
 
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -16,6 +20,7 @@ export default function PublisherRegisterPage() {
     displayName: "",
     email: "",
     password: "",
+    confirmPassword: "",
     phoneNumber: "",
     addressLine1: "",
     addressLine2: "",
@@ -47,8 +52,54 @@ export default function PublisherRegisterPage() {
     }));
   }
 
+  function validateForm() {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.firstName.trim()) newErrors.firstName = "First name is required.";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required.";
+    if (!formData.displayName.trim()) newErrors.displayName = "Display name is required.";
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Enter a valid email address.";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required.";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters.";
+    }
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password.";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match.";
+    }
+
+    if (!formData.addressLine1.trim()) newErrors.addressLine1 = "Address is required.";
+    if (!formData.city.trim()) newErrors.city = "City is required.";
+    if (!formData.stateProvince.trim()) newErrors.stateProvince = "State/Province is required.";
+    if (!formData.postalCode.trim()) newErrors.postalCode = "Postal code is required.";
+    if (!formData.country.trim()) newErrors.country = "Country is required.";
+
+    if (!formData.acceptedAgreement) {
+      newErrors.acceptedAgreement = "You must accept the agreement.";
+    }
+
+    return newErrors;
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
     setErrorMessage("");
 
     if (!formData.acceptedAgreement) {
@@ -137,15 +188,52 @@ export default function PublisherRegisterPage() {
             value={formData.displayName}
             onChange={(event) => updateField("displayName", event.target.value)}
             required />
-          <input className="rounded border p-2" placeholder="Email Address *"
+          <input type="email" className="rounded border p-2 md:col-span-2" placeholder="Email Address *"
             value={formData.email}
             onChange={(event) => updateField("email", event.target.value)}
             required />
-          <input className="rounded border p-2" placeholder="Password *"
-            value={formData.password}
-            onChange={(event) => updateField("password", event.target.value)}
-            required />
+            <ErrorText field="email" errors={errors} />
+          <div className="relative md:col-span-2">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="rounded border p-2 w-full pr-20"
+              placeholder="Password *"
+              value={formData.password}
+              onChange={(event) => updateField("password", event.target.value)}
+              required
+            />
 
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600 hover:underline"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          <ErrorText field="password" errors={errors} />
+
+          <div className="relative md:col-span-2">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              className="rounded border p-2 w-full pr-20"
+              placeholder="Confirm Password *"
+              value={formData.confirmPassword}
+              onChange={(event) =>
+                updateField("confirmPassword", event.target.value)
+              }
+              required
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600 hover:underline"
+            >
+              {showConfirmPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          <ErrorText field="confirmPassword" errors={errors} />
           <input className="rounded border p-2" placeholder="Phone Number (Optional)"
             value={formData.phoneNumber}
             onChange={(event) => updateField("phoneNumber", event.target.value)}
