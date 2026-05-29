@@ -27,8 +27,16 @@ model User {
   sheetMusic SheetMusic[]
   purchases  Purchase[]
   contracts  Contract[]
+<<<<<<< Updated upstream
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+=======
+  reviews    Review[]
+  downloads  Download[]
+  activities CustomerActivity[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+>>>>>>> Stashed changes
 }
 
 model SheetMusic {
@@ -42,8 +50,16 @@ model SheetMusic {
   artistId      String
   artist        User        @relation(fields: [artistId], references: [id])
   purchases     Purchase[]
+<<<<<<< Updated upstream
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+=======
+  reviews       Review[]
+  downloads     Download[]
+  activities    CustomerActivity[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+>>>>>>> Stashed changes
 }
 
 model Purchase {
@@ -72,6 +88,119 @@ model Contract {
   royaltyPercent Float
   startDate      DateTime
   endDate        DateTime?
+<<<<<<< Updated upstream
   createdAt      DateTime @default(now())
   artist         User     @relation(fields: [artistId], references: [id])
 }
+=======
+  createdAt      DateTime  @default(now())
+  artist         User      @relation(fields: [artistId], references: [id])
+}
+
+model Publisher {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  firstName   String
+  lastName    String
+  displayName String
+
+  addressLine1  String
+  addressLine2  String?
+  city          String
+  stateProvince String
+  postalCode    String
+  country       String
+  phoneNumber   String?
+
+  biography         String?
+  websiteUrl        String?
+  youtubeUrl        String?
+  spotifyUrl        String?
+  primaryCategories String?
+  primaryVoicings   String?
+
+  uploadingOriginalWorks Boolean
+  uploadingArrangements  Boolean
+  ownsOrControlsRights   Boolean
+  acceptedAgreement      Boolean
+
+  paypalEmail            String?
+  preferredPaymentMethod String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String        @id @default(cuid())
+  name      String
+  slug      String
+  group     CategoryGroup
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  sheetMusicCategories SheetMusicCategory[]
+
+  @@unique([group, slug])
+}
+
+model SheetMusicCategory {
+  id           String @id @default(cuid())
+  sheetMusicId String
+  categoryId   String
+
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
+  category   Category   @relation(fields: [categoryId], references: [id])
+
+  @@unique([sheetMusicId, categoryId])
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  sheetMusicId String
+  reviewerId   String
+  rating       Int      @db.SmallInt
+  title        String?
+  comment      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id], onDelete: Cascade)
+  reviewer   User       @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@unique([sheetMusicId, reviewerId])
+}
+
+model Download {
+  id           String   @id @default(cuid())
+  sheetMusicId String
+  downloaderId String
+  downloadedAt DateTime @default(now())
+
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id], onDelete: Cascade)
+  downloader User       @relation(fields: [downloaderId], references: [id], onDelete: Cascade)
+
+  @@index([sheetMusicId])
+  @@index([downloadedAt])
+}
+
+model CustomerActivity {
+  id           String   @id @default(cuid())
+  sheetMusicId String
+  customerId   String
+  activityType String
+  metadata     String?
+  createdAt    DateTime @default(now())
+
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id], onDelete: Cascade)
+  customer   User       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([sheetMusicId])
+  @@index([customerId])
+  @@index([activityType])
+  @@index([createdAt])
+}
+
+>>>>>>> Stashed changes
