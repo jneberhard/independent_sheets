@@ -1,5 +1,6 @@
 import Image from "next/image";
-//footer page
+
+
 export default function Footer() {
   return (
     <footer className="w-full border-t bg-[var(--primary)]">
