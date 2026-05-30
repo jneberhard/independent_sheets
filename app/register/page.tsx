@@ -6,17 +6,55 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 import GoogleSignInButton from "@/components/authentication/GoogleSignInButton";
 
+const isValidEmail = (email: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const isValidPassword = (password: string) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
+
 export default function RegisterPage() {
   const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setError(null);
+    setEmailError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+
+    // Email validation
+    if (!isValidEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+
+    // Password validation
+    if (!isValidPassword(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and special character."
+      );
+      return;
+    }
+
+    // Confirm password match
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match.");
+      return;
+    }
 
     try {
       await authClient.signUp.email({
@@ -37,27 +75,19 @@ export default function RegisterPage() {
       });
 
       router.refresh();
-      // Change this so it logs them in in the future
       router.push("/");
-    } catch (error: any) {
-      
-      if (error && error.message) {
-        setError("This email is already in use. If you've created an account with Google, please use the Google button.");
+    } catch (error: unknown) {
+      console.error("Registration error:", error);
+
+      if (error instanceof Error && error.message) {
+        setError(
+          "This email is already in use. If you've created an account with Google, please use the Google button."
+        );
       } else {
-        setError("An unexpected error occured. Please try again.");
+        setError("An unexpected error occurred. Please try again.");
       }
     }
   }
-//   async function handleGoogleRegister() {
-//   try {
-//     await authClient.signIn.social({
-//       provider: "google",
-//       callbackURL: "/dashboard",
-//     });
-//   } catch (error) {
-//     console.error("Google registration failed:", error);
-//   }
-// }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12">
@@ -77,6 +107,7 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleRegister} className="mt-8">
+          {/* Name */}
           <label className="block text-sm font-medium text-gray-700">
             Full Name
           </label>
@@ -87,27 +118,74 @@ export default function RegisterPage() {
             required
           />
 
+          {/* Email */}
           <label className="mt-4 block text-sm font-medium text-gray-700">
             Email
           </label>
           <input
             type="email"
+            autoComplete="email"
+            inputMode="email"
             className="mt-2 w-full rounded-md border px-3 py-2"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required
           />
+          {emailError && (
+            <p className="mt-1 text-sm text-red-600">{emailError}</p>
+          )}
 
+          {/* Password */}
           <label className="mt-4 block text-sm font-medium text-gray-700">
             Password
           </label>
-          <input
-            type="password"
-            className="mt-2 w-full rounded-md border px-3 py-2"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
+          <div className="relative mt-2">
+            <input
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              className="w-full rounded-md border px-3 py-2 pr-20"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-600 hover:text-black"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          {passwordError && (
+            <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+          )}
+
+          {/* Confirm Password */}
+          <label className="mt-4 block text-sm font-medium text-gray-700">
+            Confirm Password
+          </label>
+          <div className="relative mt-2">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              autoComplete="new-password"
+              className="w-full rounded-md border px-3 py-2 pr-20"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-600 hover:text-black"
+            >
+              {showConfirmPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          {confirmPasswordError && (
+            <p className="mt-1 text-sm text-red-600">
+              {confirmPasswordError}
+            </p>
+          )}
 
           <button
             type="submit"
@@ -115,6 +193,7 @@ export default function RegisterPage() {
           >
             Create Account
           </button>
+
           <GoogleSignInButton />
         </form>
 

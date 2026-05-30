@@ -62,16 +62,16 @@ export default async function Header() {
             href="/"
             className="flex items-center gap-3"
           >
-            <Image
-              src="/logo_1.png"
-              alt="Independent Sheets Logo"
-              width={96}
-              height={96}
-              sizes="96px"
-              className="h-auto w-20 sm:w-24"
-              style={{ height: "auto" }}
-              priority
-            />
+            <div className="relative w-20 sm:w-24 aspect-square">
+              <Image
+                src="/logo_1.png"
+                alt="Independent Sheets Logo"
+                fill
+                sizes="(max-width: 640px) 80px, 96px"
+                className="object-contain"
+                priority
+              />
+            </div>
 
             {/* Hide large text on very small screens */}
             <span className="hidden text-3xl font-bold tracking-tight text-white sm:inline">
