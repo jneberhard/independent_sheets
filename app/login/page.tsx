@@ -6,14 +6,38 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 import GoogleSignInButton from "@/components/authentication/GoogleSignInButton";
 
+const isValidEmail = (email: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const isValidPassword = (password: string) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
+
 export default function LoginPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    setEmailError("");
+    setPasswordError("");
+
+    if (!isValidEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!isValidPassword(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and special character."
+      );
+      return;
+    }
 
     try {
       await authClient.signIn.email({
@@ -45,16 +69,6 @@ export default function LoginPage() {
       router.push(`/register?email=${encodeURIComponent(email)}`);
     }
   }
-//   async function handleGoogleLogin() {
-//   try {
-//     await authClient.signIn.social({
-//       provider: "google",
-//       callbackURL: "/dashboard",
-//     });
-//   } catch (error) {
-//     console.error("Google login failed:", error);
-//   }
-// }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-6">
@@ -69,22 +83,42 @@ export default function LoginPage() {
         </label>
         <input
           type="email"
+          autoComplete="email"
+          inputMode="email"
           className="mt-2 w-full rounded-md border px-3 py-2"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required
         />
 
+        {emailError && (
+          <p className="mt-1 text-sm text-red-600">{emailError}</p>
+        )}
+
         <label className="mt-4 block text-sm font-medium text-gray-700">
           Password
         </label>
-        <input
-          type="password"
-          className="mt-2 w-full rounded-md border px-3 py-2"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
+        <div className="relative mt-2">
+          <input
+            type={showPassword ? "text" : "password"}
+            className="w-full rounded-md border px-3 py-2 pr-20"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+          />
+
+          {passwordError && (
+            <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setShowPassword((current) => !current)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-600 hover:text-black"
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
 
         <button
           type="submit"
