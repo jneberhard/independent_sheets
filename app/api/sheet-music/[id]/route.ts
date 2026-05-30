@@ -9,6 +9,40 @@ type SheetMusicRouteProps = {
   }>;
 };
 
+export async function GET(
+  _request: Request,
+{ params }: SheetMusicRouteProps
+) {
+  try {
+    const { id } = await params;
+
+    const sheetMusic = await prisma.sheetMusic.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        categories: {
+          include: {
+            category: true,
+          },
+        },
+      }
+    });
+
+    if (!sheetMusic) {
+      return NextResponse.json(
+        { error: "Sheet music not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(sheetMusic);
+
+  } catch (error) {
+    console.error("Error getting sheet music details: " + error);
+  }
+}
+
 //code to update route for editing sheet music
 
 export async function PATCH(
