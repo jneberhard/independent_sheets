@@ -8,11 +8,11 @@ export default function ComingSoonPage() {
 
         <div className="mt-10 rounded-2xl border bg-white p-10 shadow-sm">
           <h2 className="text-3xl font-semibold text-gray-900">
-            Coming Soon
+            Coming Soon - Instruments
           </h2>
 
           <p className="mt-4 text-gray-600">
-            This section of Independent Sheets is currently under development.
+            This section of Independent Sheets (instrument) is currently under development.
           </p>
         </div>
       </div>

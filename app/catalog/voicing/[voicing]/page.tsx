@@ -3,7 +3,7 @@ export default function ComingSoonPage() {
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-6">
       <div className="max-w-2xl text-center">
         <h1 className="text-5xl font-bold tracking-tight text-gray-900">
-          Independent Sheets
+          Independent Sheets (Voicings)
         </h1>
 
         <div className="mt-10 rounded-2xl border bg-white p-10 shadow-sm">
@@ -12,7 +12,7 @@ export default function ComingSoonPage() {
           </h2>
 
           <p className="mt-4 text-gray-600">
-            This section of Independent Sheets is currently under development.
+            This section of Independent Sheets (voicing) is currently under development.
           </p>
         </div>
       </div>
