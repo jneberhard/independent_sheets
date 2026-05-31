@@ -20,7 +20,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
         <div>
             <div className="rounded-2xl border bg-white p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="rounded-xl aspect-[3/4] flex items-center justify-center border">
-                    {sheetMusic.imageUrl ? (<img src={sheetMusic.imageUrl} alt={sheetMusic.title} className="rounded-xl object-cover h-full w-full" />) 
+                    {sheetMusic.imageUrl ? (<img src={sheetMusic.imageUrl} alt={sheetMusic.title} className="rounded-xl object-contain h-full w-full" />)
                     : (<span className="text-gray-400">No Preview Available</span>)}
                 </div>
 
@@ -35,9 +35,9 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
                             {sheetMusic.categories.map((cat) => (
                                 // Link would be super cool to have but it's not necessary. Asking team about adding it
                             // <Link href={`/catalog/voicing/${cat.category.name}`} key={cat.categoryId} >
-                                <span 
+                                <span
                                 // Comment this line if Link is utilized
-                                key={cat.categoryId} 
+                                key={cat.categoryId}
                                 //
                                 className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-inset ring-blue-700/10 transition duration-200 ease-in-out hover:-translate-y-0.5 hover:scale-102"
                             >

@@ -11,10 +11,7 @@ export default async function PublisherDashboardPage() {
     redirect("/login");
   }
 
-  if (
-    user.role.name !== "PUBLISHER" &&
-    user.role.name !== "ADMIN"
-  ) {
+  if (user.role.name !== "PUBLISHER" && user.role.name !== "ADMIN") {
     redirect("/dashboard");
   }
 
@@ -41,10 +38,11 @@ export default async function PublisherDashboardPage() {
 
         {/* QUICK ACTIONS */}
         <section className="mt-10 grid gap-6 md:grid-cols-3">
+
           {/* Upload */}
           <Link
             href="/dashboard/publisher/upload"
-            className="group rounded-3xl border border-[var(--secondary)] bg-white p-7 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-xl"
+            className="group rounded-3xl border border-[var(--secondary)] bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="inline-flex rounded-full bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--primary)]">
               Upload
@@ -56,8 +54,7 @@ export default async function PublisherDashboardPage() {
 
             <p className="mt-4 text-sm leading-7 text-gray-700">
               Add a new PDF score, preview MP3, artwork image,
-              title, description, and pricing information for your
-              music catalog.
+              title, description, and pricing information.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-[var(--primary)] group-hover:underline">
@@ -68,7 +65,7 @@ export default async function PublisherDashboardPage() {
           {/* Manage */}
           <Link
             href="/dashboard/publisher/music"
-            className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-xl"
+            className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-semibold text-[var(--primary)]">
               Manage
@@ -79,9 +76,7 @@ export default async function PublisherDashboardPage() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-white">
-              Edit uploaded music, change artwork, update pricing,
-              revise descriptions, and manage voicing,
-              instrumentation, and genre categories.
+              Edit uploaded music, update pricing, and manage metadata.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-white group-hover:underline">
@@ -92,7 +87,7 @@ export default async function PublisherDashboardPage() {
           {/* Sales */}
           <Link
             href="/dashboard/publisher/sales"
-            className="group rounded-3xl border border-[var(--primary)] bg-[var(--secondary)] p-7 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-xl"
+            className="group rounded-3xl border border-[var(--primary)] bg-[var(--secondary)] p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="inline-flex rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white">
               Analytics
@@ -103,9 +98,7 @@ export default async function PublisherDashboardPage() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-[var(--primary)]">
-              Review purchases, downloads, customer activity,
-              and royalty earnings to better understand how your
-              music is performing.
+              Review purchases and royalty earnings.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-[var(--primary)] group-hover:underline">
@@ -114,10 +107,7 @@ export default async function PublisherDashboardPage() {
           </Link>
 
           {/* Purchases */}
-          <Link
-            href="/dashboard/purchases"
-            className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-xl"
-          >
+          <div className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
             <div className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-semibold text-[var(--primary)]">
               Purchases
             </div>
@@ -127,16 +117,18 @@ export default async function PublisherDashboardPage() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-white">
-              See the purchases you have already made for sheet music.
+              See your purchase history.
             </p>
 
-            <CustomerNav />
-          </Link>
+            <div className="mt-4">
+              <CustomerNav />
+            </div>
+          </div>
 
           {/* Account */}
           <Link
             href="/account"
-            className="group rounded-3xl border border-[var(--primary)] bg-[var(--secondary)] p-7 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-xl"
+            className="group rounded-3xl border border-[var(--primary)] bg-[var(--secondary)] p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="inline-flex rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white">
               Account
@@ -147,13 +139,14 @@ export default async function PublisherDashboardPage() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-[var(--primary)]">
-              Change your account information, including passwords, address, email address, etc
+              Change account info and password.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-[var(--primary)] group-hover:underline">
               Account Management →
             </div>
           </Link>
+
         </section>
       </div>
     </main>

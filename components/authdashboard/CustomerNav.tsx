@@ -1,14 +1,18 @@
+"use client";
+
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/currentUser";
 
-export default async function CustomerNav() {
-    const user = await getCurrentUser();
+export default function CustomerNav({ userId }: { userId?: string }) {
+  if (!userId) return null;
 
-    const userId = user?.id;
-
-    return (
-        <nav className="text-blue-800">
-            <Link href={`/dashboard/purchases/${userId}`}>My Purchase History</Link>
-        </nav>
-    );
+  return (
+    <nav className="mt-4 text-sm text-blue-800">
+      <Link
+        href={`/dashboard/purchases/${userId}`}
+        className="hover:underline"
+      >
+        My Purchase History
+      </Link>
+    </nav>
+  );
 }
