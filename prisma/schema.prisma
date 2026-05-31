@@ -27,19 +27,36 @@ model Role {
 model User {
   id         String       @id @default(cuid())
   email      String       @unique
+  firstName  String?
+  lastName   String?
   name       String?
+
+  authProvider   String   @default("credentials")
+  passwordHash   String?
+
   roleId     String
   role       Role         @relation(fields: [roleId], references: [id])
+
+  addressLine1   String?
+  addressLine2   String?
+  city           String?
+  stateProvince  String?
+  postalCode     String?
+  country        String?
+  phoneNumber    String?
+
   publisher  Publisher?
-  sheetMusic SheetMusic[]
-  purchases  Purchase[]
-  contracts  Contract[]
+
+  sheetMusic SheetMusic[] @relation("UserSheetMusic")
+  purchases   Purchase[]   @relation("UserPurchases")
+  contracts   Contract[]   @relation("UserContracts")
+
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 }
 
 model SheetMusic {
-  id            String               @id @default(cuid())
+  id            String   @id @default(cuid())
   title         String
   description   String?
   priceCents    Int
@@ -47,12 +64,15 @@ model SheetMusic {
   imageUrl      String?
   previewMp3Url String?
   previewLink   String?
+
   artistId      String
-  artist        User                 @relation(fields: [artistId], references: [id])
+  artist        User     @relation("UserSheetMusic", fields: [artistId], references: [id])
+
   categories    SheetMusicCategory[]
   purchases     Purchase[]
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Purchase {
@@ -61,8 +81,10 @@ model Purchase {
   sheetMusicId String
   amountCents  Int
   purchasedAt  DateTime   @default(now())
-  buyer        User       @relation(fields: [buyerId], references: [id])
+
+  buyer        User       @relation("UserPurchases", fields: [buyerId], references: [id])
   sheetMusic   SheetMusic @relation(fields: [sheetMusicId], references: [id])
+
   royalty      Royalty?
 }
 
@@ -82,7 +104,8 @@ model Contract {
   startDate      DateTime
   endDate        DateTime?
   createdAt      DateTime  @default(now())
-  artist         User      @relation(fields: [artistId], references: [id])
+
+  artist         User      @relation("UserContracts", fields: [artistId], references: [id])
 }
 
 model Publisher {
