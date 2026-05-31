@@ -50,28 +50,29 @@ model User {
   sheetMusic SheetMusic[] @relation("UserSheetMusic")
   purchases   Purchase[]   @relation("UserPurchases")
   contracts   Contract[]   @relation("UserContracts")
-  reviews      Reviews[]
+  reviews     Reviews[]
 
   createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  updatedAt   DateTime     @updatedAt
 }
 
 model SheetMusic {
-  id            String   @id @default(cuid())
-  title         String
-  description   String?
-  priceCents    Int
-  pdfUrl        String
-  imageUrl      String?
-  previewMp3Url String?
-  previewLink   String?
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  priceCents     Int
+  pdfUrl         String
+  imageUrl       String?
+  previewMp3Url  String?
+  previewLink    String?
+  rightsVerified Boolean  @default(false)
 
   artistId      String
   artist        User     @relation("UserSheetMusic", fields: [artistId], references: [id])
 
   categories    SheetMusicCategory[]
   purchases     Purchase[]
-  reviews        Reviews[]
+  reviews       Reviews[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -169,13 +170,14 @@ model SheetMusicCategory {
 
   @@unique([sheetMusicId, categoryId])
 }
+
 model Reviews {
-  id            String @id @default(cuid())
-  reviewText    String
-  rating        Int
-  userId        String
-  sheetMusicId  String
+  id           String @id @default(cuid())
+  reviewText   String
+  rating       Int
+  userId       String
+  sheetMusicId String
 
   sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
 }

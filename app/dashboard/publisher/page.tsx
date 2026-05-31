@@ -110,7 +110,7 @@ export default async function PublisherDashboardPage() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-white">
-              See the purchases you have already made for sheet music.
+              See your purchase history.
             </p>
 
             <CustomerNav userId={user.id} />
@@ -129,7 +129,7 @@ export default async function PublisherDashboardPage() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-[var(--primary)]">
-              Change your account information, including passwords, address, email address, etc
+              Change account info and password.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-[var(--primary)] group-hover:underline">

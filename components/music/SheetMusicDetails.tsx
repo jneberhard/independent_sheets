@@ -73,20 +73,6 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
       </div>
 
       {/* PDF Component. Hidden for now until preview PDF is in place */}
-
-      {/* <div className="mt-20 h-[600px] w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-inner">
-        {sheetMusic.pdfUrl ? (
-          <iframe
-            src={`${sheetMusic.pdfUrl}#toolbar=0&navpanes=0`}
-            className="h-full w-full"
-            title={`PDF preview for ${sheetMusic.title}`}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-gray-400">
-            No preview file attached
-          </div>
-        )}
-      </div> */}
     </div>
   );
 }
