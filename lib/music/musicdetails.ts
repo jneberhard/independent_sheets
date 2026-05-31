@@ -1,23 +1,25 @@
-import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { cache } from "react";
 
-export type SheetMusicWithCategories = Prisma.SheetMusicGetPayload<{
-  include: {
-    categories: {
-      include: {
-        category: true;
-      };
-    };
-  };
-}>;
+export const getSheetMusicDetails = cache(async (id: string) => {
+    try {
+        const sheetMusic = await prisma.sheetMusic.findUnique({
+        where: {
+            id,
+        },
+        include: {
+            categories: {
+            include: {
+                category: true,
+            },
+            },
+        }
+        });
 
-export async function getSheetMusicDetails(id: string): Promise<SheetMusicWithCategories | null> {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
-    const res = await fetch(`${baseUrl}/api/sheet-music/${id}`);
+        return sheetMusic || null;
 
-    if (!res.ok) {
-        if (res.status == 404) return null;
-        throw new Error(`Failed to fetch sheet music details: ${res.statusText}`);
+    } catch (error) {
+        console.error(`Failed to fetch sheet music details: ${error}`);
+        return null;
     }
-
-    return res.json();
-}
+});
