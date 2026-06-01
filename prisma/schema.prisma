@@ -50,6 +50,7 @@ model User {
   sheetMusic SheetMusic[] @relation("UserSheetMusic")
   purchases   Purchase[]   @relation("UserPurchases")
   contracts   Contract[]   @relation("UserContracts")
+<<<<<<< HEAD
   reviews     Reviews[]
 
   createdAt  DateTime     @default(now())
@@ -72,6 +73,7 @@ model SheetMusic {
 
   categories    SheetMusicCategory[]
   purchases     Purchase[]
+<<<<<<< HEAD
   reviews       Reviews[]
 
   createdAt     DateTime @default(now())
