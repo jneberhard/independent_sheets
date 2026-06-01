@@ -19,7 +19,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
     return (
         <div>
             <div className="rounded-2xl border bg-white p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="rounded-xl aspect-[3/4] flex items-center justify-center border">
+                <div className="rounded-xl aspect-[3/4] flex items-center justify-center">
                     {sheetMusic.imageUrl ? (<img src={sheetMusic.imageUrl} alt={sheetMusic.title} className="rounded-xl object-contain h-full w-full" />)
                     : (<span className="text-gray-400">No Preview Available</span>)}
                 </div>
