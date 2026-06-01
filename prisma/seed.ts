@@ -172,6 +172,31 @@ async function main() {
     },
   });
 
+  const customerRole = await prisma.role.findUnique({
+    where: {
+      name: RoleName.USER,
+    },
+  });
+
+  if (!customerRole) {
+    throw new Error("USER role was not found.");
+  }
+
+  const demoCustomer = await prisma.user.upsert({
+    where: {
+      email: "demo.customer@independentsheets.com",
+    },
+    update: {
+      name: "Demo Customer",
+      roleId: customerRole.id,
+    },
+    create: {
+      email: "demo.customer@independentsheets.com",
+      name: "Demo Customer",
+      roleId: customerRole.id,
+    },
+  });
+
   const demoSongs = [
     {
       title: "Amazing Grace (SATB)",
@@ -236,6 +261,7 @@ async function main() {
             imageUrl: song.imageUrl,
             previewMp3Url: song.previewMp3Url,
             previewLink: song.previewLink,
+            rightsVerified: true,
             artistId: demoPublisher.id,
           },
         });
@@ -255,6 +281,43 @@ async function main() {
       })),
       skipDuplicates: true,
     });
+  }
+
+  const demoPurchaseSheetMusic = await prisma.sheetMusic.findFirst({
+    where: {
+      artistId: demoPublisher.id,
+      title: "Amazing Grace (SATB)",
+    },
+  });
+
+  if (demoPurchaseSheetMusic) {
+    const existingPurchase = await prisma.purchase.findFirst({
+      where: {
+        buyerId: demoCustomer.id,
+        sheetMusicId: demoPurchaseSheetMusic.id,
+      },
+    });
+
+    if (!existingPurchase) {
+      const artistAmount = Math.round(demoPurchaseSheetMusic.priceCents * 0.75);
+      const platformAmount = demoPurchaseSheetMusic.priceCents - artistAmount;
+
+      const purchase = await prisma.purchase.create({
+        data: {
+          buyerId: demoCustomer.id,
+          sheetMusicId: demoPurchaseSheetMusic.id,
+          amountCents: demoPurchaseSheetMusic.priceCents,
+        },
+      });
+
+      await prisma.royalty.create({
+        data: {
+          purchaseId: purchase.id,
+          artistAmount,
+          platformAmount,
+        },
+      });
+    }
   }
 
   console.log("Seed completed successfully.");

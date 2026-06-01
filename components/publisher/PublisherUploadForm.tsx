@@ -27,6 +27,7 @@ export default function PublisherUploadForm({
   const [mp3File, setMp3File] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [rightsVerified, setRightsVerified] = useState(false);
 
   function toggleCategory(categoryId: string) {
     setSelectedCategoryIds((current) =>
@@ -72,6 +73,11 @@ export default function PublisherUploadForm({
       return;
     }
 
+    if (!rightsVerified) {
+      alert("Please confirm that you own or control the rights to this music.");
+      return;
+    }
+
     const pdfUpload = await uploadFile(pdfFile, "sheet-music");
     const imageUpload = await uploadFile(imageFile, "images");
 
@@ -93,6 +99,7 @@ export default function PublisherUploadForm({
         imageUrl: imageUpload.url,
         previewMp3Url: mp3Upload?.url ?? null,
         categoryIds: selectedCategoryIds,
+        rightsVerified,
       }),
     });
 
@@ -106,6 +113,7 @@ export default function PublisherUploadForm({
     setTitle("");
     setPriceCents("");
     setSelectedCategoryIds([]);
+    setRightsVerified(false);
     setPdfFile(null);
     setMp3File(null);
     setImageFile(null);
@@ -242,6 +250,20 @@ export default function PublisherUploadForm({
         selectedCategoryIds={selectedCategoryIds}
         toggleCategory={toggleCategory}
       />
+
+      <label className="flex items-start gap-3 rounded-xl border bg-gray-50 p-4 text-sm text-gray-700">
+        <input
+          type="checkbox"
+          className="mt-1"
+          checked={rightsVerified}
+          onChange={(event) => setRightsVerified(event.target.checked)}
+        />
+
+        <span>
+          I confirm that I own the copyright to this music or have the proper
+          licenses and permissions to upload, distribute, and sell it.
+        </span>
+      </label>
 
       <button
         type="submit"

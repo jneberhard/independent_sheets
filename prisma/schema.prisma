@@ -25,36 +25,35 @@ model Role {
 }
 
 model User {
-  id         String       @id @default(cuid())
-  email      String       @unique
-  firstName  String?
-  lastName   String?
-  name       String?
+  id        String  @id @default(cuid())
+  email     String  @unique
+  firstName String?
+  lastName  String?
+  name      String?
 
-  authProvider   String   @default("credentials")
-  passwordHash   String?
+  authProvider String  @default("credentials")
+  passwordHash String?
 
-  roleId     String
-  role       Role         @relation(fields: [roleId], references: [id])
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
 
-  addressLine1   String?
-  addressLine2   String?
-  city           String?
-  stateProvince  String?
-  postalCode     String?
-  country        String?
-  phoneNumber    String?
+  addressLine1  String?
+  addressLine2  String?
+  city          String?
+  stateProvince String?
+  postalCode    String?
+  country       String?
+  phoneNumber   String?
 
-  publisher  Publisher?
+  publisher Publisher?
 
   sheetMusic SheetMusic[] @relation("UserSheetMusic")
-  purchases   Purchase[]   @relation("UserPurchases")
-  contracts   Contract[]   @relation("UserContracts")
-<<<<<<< HEAD
-  reviews     Reviews[]
+  purchases  Purchase[]   @relation("UserPurchases")
+  contracts  Contract[]   @relation("UserContracts")
+  reviews    Reviews[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model SheetMusic {
@@ -68,29 +67,28 @@ model SheetMusic {
   previewLink    String?
   rightsVerified Boolean  @default(false)
 
-  artistId      String
-  artist        User     @relation("UserSheetMusic", fields: [artistId], references: [id])
+  artistId String
+  artist   User   @relation("UserSheetMusic", fields: [artistId], references: [id])
 
-  categories    SheetMusicCategory[]
-  purchases     Purchase[]
-<<<<<<< HEAD
-  reviews       Reviews[]
+  categories SheetMusicCategory[]
+  purchases  Purchase[]
+  reviews    Reviews[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Purchase {
-  id           String     @id @default(cuid())
+  id           String   @id @default(cuid())
   buyerId      String
   sheetMusicId String
   amountCents  Int
-  purchasedAt  DateTime   @default(now())
+  purchasedAt  DateTime @default(now())
 
-  buyer        User       @relation("UserPurchases", fields: [buyerId], references: [id])
-  sheetMusic   SheetMusic @relation(fields: [sheetMusicId], references: [id])
+  buyer      User       @relation("UserPurchases", fields: [buyerId], references: [id])
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
 
-  royalty      Royalty?
+  royalty Royalty?
 }
 
 model Royalty {
@@ -110,7 +108,7 @@ model Contract {
   endDate        DateTime?
   createdAt      DateTime  @default(now())
 
-  artist         User      @relation("UserContracts", fields: [artistId], references: [id])
+  artist User @relation("UserContracts", fields: [artistId], references: [id])
 }
 
 model Publisher {
