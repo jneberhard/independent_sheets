@@ -50,6 +50,7 @@ model User {
   sheetMusic SheetMusic[] @relation("UserSheetMusic")
   purchases   Purchase[]   @relation("UserPurchases")
   contracts   Contract[]   @relation("UserContracts")
+  reviews      Reviews[]
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -70,6 +71,7 @@ model SheetMusic {
 
   categories    SheetMusicCategory[]
   purchases     Purchase[]
+  reviews        Reviews[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -166,4 +168,14 @@ model SheetMusicCategory {
   category   Category   @relation(fields: [categoryId], references: [id])
 
   @@unique([sheetMusicId, categoryId])
+}
+model Reviews {
+  id            String @id @default(cuid())
+  reviewText    String
+  rating        Int
+  userId        String
+  sheetMusicId  String
+
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
