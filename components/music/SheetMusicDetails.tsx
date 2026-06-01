@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/currentUser";
 import { getSheetMusicDetails } from "@/lib/music/musicdetails";
@@ -71,8 +71,6 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
           </div>
         </div>
       </div>
-
-      {/* PDF Component. Hidden for now until preview PDF is in place */}
     </div>
   );
 }
