@@ -23,16 +23,58 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
+    const categoryIds = Array.isArray(body.categoryIds)
+      ? body.categoryIds.filter((categoryId: unknown) => {
+          return typeof categoryId === "string" && categoryId.length > 0;
+        })
+      : [];
+
+    if (categoryIds.length === 0) {
+      return NextResponse.json(
+        { error: "At least one category is required" },
+        { status: 400 }
+      );
+    }
+
+    if (body.rightsVerified !== true) {
+      return NextResponse.json(
+        { error: "Copyright / rights verification is required" },
+        { status: 400 }
+      );
+    }
+
+    const priceCents = Number(body.priceCents);
+
+    if (!Number.isInteger(priceCents) || priceCents <= 0) {
+      return NextResponse.json(
+        { error: "Price must be a positive whole number of cents" },
+        { status: 400 }
+      );
+    }
+
     const sheetMusic = await prisma.sheetMusic.create({
       data: {
         title: body.title,
         description: body.description || null,
-        priceCents: body.priceCents,
+        priceCents,
         pdfUrl: body.pdfUrl,
         imageUrl: body.imageUrl || null,
         previewMp3Url: body.previewMp3Url || null,
         previewLink: body.previewLink || null,
+        rightsVerified: true,
         artistId: user.id,
+        categories: {
+          create: categoryIds.map((categoryId: string) => ({
+            categoryId,
+          })),
+        },
+      },
+      include: {
+        categories: {
+          include: {
+            category: true,
+          },
+        },
       },
     });
 
