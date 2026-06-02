@@ -1,8 +1,8 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import { getCurrentUser } from "@/lib/currentUser";
 import CustomerNav from "@/components/authdashboard/CustomerNav";
+import { getCurrentUser } from "@/lib/currentUser";
 
 export default async function PublisherDashboardPage() {
   const user = await getCurrentUser();
@@ -18,7 +18,6 @@ export default async function PublisherDashboardPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] px-6 py-12">
       <div className="mx-auto max-w-6xl">
-        {/* HERO */}
         <section className="rounded-3xl bg-[var(--primary)] p-10 text-white shadow-xl">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
             Publisher Workspace
@@ -36,10 +35,7 @@ export default async function PublisherDashboardPage() {
           </p>
         </section>
 
-        {/* QUICK ACTIONS */}
         <section className="mt-10 grid gap-6 md:grid-cols-3">
-
-          {/* Upload */}
           <Link
             href="/dashboard/publisher/upload"
             className="group rounded-3xl border border-[var(--secondary)] bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
@@ -62,7 +58,6 @@ export default async function PublisherDashboardPage() {
             </div>
           </Link>
 
-          {/* Manage */}
           <Link
             href="/dashboard/publisher/music"
             className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
@@ -84,7 +79,6 @@ export default async function PublisherDashboardPage() {
             </div>
           </Link>
 
-          {/* Sales */}
           <Link
             href="/dashboard/publisher/sales"
             className="group rounded-3xl border border-[var(--primary)] bg-[var(--secondary)] p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
@@ -106,7 +100,6 @@ export default async function PublisherDashboardPage() {
             </div>
           </Link>
 
-          {/* Purchases */}
           <div className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
             <div className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-semibold text-[var(--primary)]">
               Purchases
@@ -120,12 +113,9 @@ export default async function PublisherDashboardPage() {
               See your purchase history.
             </p>
 
-            <div className="mt-4">
-              <CustomerNav />
-            </div>
+            <CustomerNav userId={user.id} />
           </div>
 
-          {/* Account */}
           <Link
             href="/account"
             className="group rounded-3xl border border-[var(--primary)] bg-[var(--secondary)] p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
@@ -146,7 +136,6 @@ export default async function PublisherDashboardPage() {
               Account Management →
             </div>
           </Link>
-
         </section>
       </div>
     </main>

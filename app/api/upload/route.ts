@@ -23,10 +23,7 @@ export async function POST(request: Request) {
       ? `${folder}/${filename}`
       : filename;
 
-    const access =
-      folder === "images" || folder === "previews"
-        ? "public"
-        : "public";
+    const access = folder === "sheet-music" ? "private" : "public";
 
     const blob = await put(pathname, file, {
       access,

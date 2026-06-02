@@ -15,12 +15,12 @@ export async function POST(req: Request) {
     // ensureUser guarantees the user exists in Prisma and returns the DB row
     const dbUser = await ensureUser(session);
 
-    // Block Google users
+    // Block Google/OAuth users from executing standard password changes
     if (dbUser.authProvider !== "credentials") {
       return NextResponse.json(
         {
           error:
-            "This account uses OAuth (Google/Apple). Password changes must be done through your provider.",
+            "This account uses OAuth (Google). Password updates must be managed through your identity provider.",
         },
         { status: 400 }
       );
@@ -35,34 +35,43 @@ export async function POST(req: Request) {
       );
     }
 
-    // First-time password setup (passwordHash is null)
-    if (!dbUser.passwordHash) {
-      const newHash = await bcrypt.hash(newPassword, 12);
+    // 1. Validate current password against local database (if a password hash already exists)
+    if (dbUser.passwordHash) {
+      if (!currentPassword) {
+        return NextResponse.json(
+          { error: "Current password is required to make updates." },
+          { status: 400 }
+        );
+      }
 
-      await prisma.user.update({
-        where: { id: dbUser.id },
-        data: { passwordHash: newHash },
-      });
-
-      return NextResponse.json({ success: true });
+      const isValid = await bcrypt.compare(currentPassword, dbUser.passwordHash);
+      if (!isValid) {
+        return NextResponse.json(
+          { error: "Current password is incorrect" },
+          { status: 400 }
+        );
+      }
     }
 
-    // Validate current password
-    const isValid = await bcrypt.compare(
-      currentPassword,
-      dbUser.passwordHash
-    );
+    // 2. Synchronize the credential change to Neon Auth first
+    // This securely invalidates current tokens and forces an upstream update
+    const { error: authError } = await auth.changePassword({
+      currentPassword: currentPassword || "", // Fallback empty string if setting a password for the first time
+      newPassword: newPassword,
+      revokeOtherSessions: true,
+    });
 
-    if (!isValid) {
+    if (authError) {
       return NextResponse.json(
-        { error: "Current password is incorrect" },
+        { error: authError.message || "Failed to update authentication server records." },
         { status: 400 }
       );
     }
 
-    // Update password
+    // 3. Hash the new password for your local Prisma fallback layer
     const newHash = await bcrypt.hash(newPassword, 12);
 
+    // 4. Update the local Prisma database
     await prisma.user.update({
       where: { id: dbUser.id },
       data: { passwordHash: newHash },
@@ -70,9 +79,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("Password sync failure encountered:", err);
+
+    // Explicitly parse error types to avoid "unexpected any" violations
+    const errorMessage = err instanceof Error ? err.message : "Internal server error";
+
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: errorMessage },
       { status: 500 }
     );
   }

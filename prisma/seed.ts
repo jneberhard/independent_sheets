@@ -4,25 +4,23 @@ import { Client, neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
 import "dotenv/config";
 
-// 1. Configure serverless driver to use WebSockets in Node.js
 neonConfig.webSocketConstructor = ws;
 
-// 2. Validate and extract database connection string
 const connectionString = process.env.DATABASE_URL;
+
 if (!connectionString) {
   throw new Error("DATABASE_URL is missing from your environment variables.");
 }
 
-// 3. Initialize Neon Client and Prisma Adapter
 const client = new Client(connectionString);
 const adapter = new PrismaNeon(client);
 const prisma = new PrismaClient({ adapter });
 
-async function main() {
-  /*
-    Roles
-  */
+function slugify(value: string) {
+  return value.toLowerCase().replace(/\s+/g, "-");
+}
 
+async function main() {
   await prisma.role.upsert({
     where: {
       name: RoleName.USER,
@@ -56,10 +54,6 @@ async function main() {
     },
   });
 
-  /*
-    Voicing Categories -
-  */
-
   const voicings = [
     "SATB",
     "SSAA",
@@ -80,21 +74,17 @@ async function main() {
       where: {
         group_slug: {
           group: CategoryGroup.VOICING,
-          slug: category.toLowerCase().replace(/\s+/g, "-"),
+          slug: slugify(category),
         },
       },
       update: {},
       create: {
         name: category,
-        slug: category.toLowerCase().replace(/\s+/g, "-"),
+        slug: slugify(category),
         group: CategoryGroup.VOICING,
       },
     });
   }
-
-  /*
-    Instrument Categories -- add more if needed
-  */
 
   const instruments = [
     "Piano",
@@ -117,21 +107,17 @@ async function main() {
       where: {
         group_slug: {
           group: CategoryGroup.INSTRUMENT,
-          slug: category.toLowerCase().replace(/\s+/g, "-"),
+          slug: slugify(category),
         },
       },
       update: {},
       create: {
         name: category,
-        slug: category.toLowerCase().replace(/\s+/g, "-"),
+        slug: slugify(category),
         group: CategoryGroup.INSTRUMENT,
       },
     });
   }
-
-  /*
-    Genre Categories
-  */
 
   const genres = [
     "Sacred",
@@ -149,24 +135,197 @@ async function main() {
       where: {
         group_slug: {
           group: CategoryGroup.GENRE,
-          slug: category.toLowerCase().replace(/\s+/g, "-"),
+          slug: slugify(category),
         },
       },
       update: {},
       create: {
         name: category,
-        slug: category.toLowerCase().replace(/\s+/g, "-"),
+        slug: slugify(category),
         group: CategoryGroup.GENRE,
       },
     });
   }
 
-  console.log("🌱 Seed completed successfully.");
+  const publisherRole = await prisma.role.findUnique({
+    where: {
+      name: RoleName.PUBLISHER,
+    },
+  });
+
+  if (!publisherRole) {
+    throw new Error("PUBLISHER role was not found.");
+  }
+
+  const demoPublisher = await prisma.user.upsert({
+    where: {
+      email: "demo.publisher@independentsheets.com",
+    },
+    update: {
+      name: "Demo Publisher",
+      roleId: publisherRole.id,
+    },
+    create: {
+      email: "demo.publisher@independentsheets.com",
+      name: "Demo Publisher",
+      roleId: publisherRole.id,
+    },
+  });
+
+  const customerRole = await prisma.role.findUnique({
+    where: {
+      name: RoleName.USER,
+    },
+  });
+
+  if (!customerRole) {
+    throw new Error("USER role was not found.");
+  }
+
+  const demoCustomer = await prisma.user.upsert({
+    where: {
+      email: "demo.customer@independentsheets.com",
+    },
+    update: {
+      name: "Demo Customer",
+      roleId: customerRole.id,
+    },
+    create: {
+      email: "demo.customer@independentsheets.com",
+      name: "Demo Customer",
+      roleId: customerRole.id,
+    },
+  });
+
+  const demoSongs = [
+    {
+      title: "Amazing Grace (SATB)",
+      description: "Demo sheet music for detail page testing.",
+      priceCents: 499,
+      pdfUrl: "https://example.com/demo/amazing-grace-satb.pdf",
+      imageUrl: "https://example.com/demo/amazing-grace-satb.jpg",
+      previewMp3Url: "https://example.com/demo/amazing-grace-satb.mp3",
+      previewLink: "https://www.youtube.com/watch?v=CDdvReNKKuk",
+      categorySlugs: ["satb", "piano", "sacred"],
+    },
+    {
+      title: "How Great Thou Art (SAB)",
+      description: "Demo SAB arrangement with organ accompaniment.",
+      priceCents: 599,
+      pdfUrl: "https://example.com/demo/how-great-thou-art-sab.pdf",
+      imageUrl: "https://example.com/demo/how-great-thou-art-sab.jpg",
+      previewMp3Url: null,
+      previewLink: "https://open.spotify.com/",
+      categorySlugs: ["sab", "organ", "sacred"],
+    },
+    {
+      title: "Ave Verum Corpus (SATB)",
+      description: "Demo classical choir listing for navigation checks.",
+      priceCents: 699,
+      pdfUrl: "https://example.com/demo/ave-verum-corpus-satb.pdf",
+      imageUrl: "https://example.com/demo/ave-verum-corpus-satb.jpg",
+      previewMp3Url: "https://example.com/demo/ave-verum-corpus-satb.mp3",
+      previewLink: null,
+      categorySlugs: ["satb", "piano", "classical"],
+    },
+  ];
+
+  for (const song of demoSongs) {
+    const existingSong = await prisma.sheetMusic.findFirst({
+      where: {
+        artistId: demoPublisher.id,
+        title: song.title,
+      },
+    });
+
+    const savedSong = existingSong
+      ? await prisma.sheetMusic.update({
+          where: {
+            id: existingSong.id,
+          },
+          data: {
+            description: song.description,
+            priceCents: song.priceCents,
+            pdfUrl: song.pdfUrl,
+            imageUrl: song.imageUrl,
+            previewMp3Url: song.previewMp3Url,
+            previewLink: song.previewLink,
+          },
+        })
+      : await prisma.sheetMusic.create({
+          data: {
+            title: song.title,
+            description: song.description,
+            priceCents: song.priceCents,
+            pdfUrl: song.pdfUrl,
+            imageUrl: song.imageUrl,
+            previewMp3Url: song.previewMp3Url,
+            previewLink: song.previewLink,
+            rightsVerified: true,
+            artistId: demoPublisher.id,
+          },
+        });
+
+    const linkedCategories = await prisma.category.findMany({
+      where: {
+        slug: {
+          in: song.categorySlugs,
+        },
+      },
+    });
+
+    await prisma.sheetMusicCategory.createMany({
+      data: linkedCategories.map((category) => ({
+        sheetMusicId: savedSong.id,
+        categoryId: category.id,
+      })),
+      skipDuplicates: true,
+    });
+  }
+
+  const demoPurchaseSheetMusic = await prisma.sheetMusic.findFirst({
+    where: {
+      artistId: demoPublisher.id,
+      title: "Amazing Grace (SATB)",
+    },
+  });
+
+  if (demoPurchaseSheetMusic) {
+    const existingPurchase = await prisma.purchase.findFirst({
+      where: {
+        buyerId: demoCustomer.id,
+        sheetMusicId: demoPurchaseSheetMusic.id,
+      },
+    });
+
+    if (!existingPurchase) {
+      const artistAmount = Math.round(demoPurchaseSheetMusic.priceCents * 0.75);
+      const platformAmount = demoPurchaseSheetMusic.priceCents - artistAmount;
+
+      const purchase = await prisma.purchase.create({
+        data: {
+          buyerId: demoCustomer.id,
+          sheetMusicId: demoPurchaseSheetMusic.id,
+          amountCents: demoPurchaseSheetMusic.priceCents,
+        },
+      });
+
+      await prisma.royalty.create({
+        data: {
+          purchaseId: purchase.id,
+          artistAmount,
+          platformAmount,
+        },
+      });
+    }
+  }
+
+  console.log("Seed completed successfully.");
 }
 
 main()
   .catch((error) => {
-    console.error("❌ Seed failed:", error);
+    console.error("Seed failed:", error);
     process.exit(1);
   })
   .finally(async () => {
