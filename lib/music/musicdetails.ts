@@ -13,6 +13,17 @@ export const getSheetMusicDetails = cache(async (id: string, userId?: string) =>
             category: true,
           },
         },
+        reviews: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                name: true,
+              },
+            },
+          },
+        },
         purchases: userId
           ? {
               where: {
