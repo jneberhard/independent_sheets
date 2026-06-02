@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/currentUser";
 import { getSheetMusicDetails } from "@/lib/music/musicdetails";
+import ReviewsSection from "./ReviewsSection";
 
 type SheetMusicDetailsProps = {
   id: string;
@@ -71,6 +72,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
           </div>
         </div>
       </div>
+      <ReviewsSection sheetMusicId={sheetMusic.id} reviews={sheetMusic.reviews} currentUser={user} />
     </div>
   );
 }
