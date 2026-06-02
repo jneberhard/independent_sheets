@@ -27,7 +27,7 @@ export default function ReviewForm({ sheetMusicId }: ReviewFormProps) {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`/api/music/${sheetMusicId}/reviews`, {
+      const res = await fetch(`/api/sheet-music/${sheetMusicId}/reviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

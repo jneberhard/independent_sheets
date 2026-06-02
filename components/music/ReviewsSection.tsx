@@ -1,4 +1,4 @@
-import { User, SheetMusic, Reviews } from "@prisma/client";
+import { User, Reviews } from "@prisma/client";
 import ReviewForm from "./ReviewForm";
 
 type ReviewWithUser = Reviews & {
@@ -21,7 +21,7 @@ export default function ReviewsSection({ sheetMusicId, reviews, currentUser }: R
   );
 
   return (
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-3 border-t border-gray-200 pt-10">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-3 pt-10">
       
 
       <div className="md:col-span-2 space-y-6">
@@ -63,14 +63,14 @@ export default function ReviewsSection({ sheetMusicId, reviews, currentUser }: R
 
       <div className="space-y-4">
         {!currentUser ? (
-          <div className="rounded-xl border border-dashed bg-gray-50 p-6 text-center">
+          <div className="rounded-xl border bg-gray-50 p-6 text-center">
             <p className="text-sm text-gray-600">
-              You must be signed in to review this music.
+              You must be signed in to leave a review.
             </p>
           </div>
         ) : hasUserReviewed ? (
-          <div className="rounded-xl border border-green-100 bg-green-50/50 p-6 text-center">
-            <p className="text-sm font-medium text-green-800">
+          <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center">
+            <p className="text-sm font-medium text-green-900">
               Thank for leaving a review!
             </p>
           </div>
