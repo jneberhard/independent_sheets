@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useSyncExternalStore } from 'react';
 
 interface CartItem {
   id: string;
@@ -9,6 +9,7 @@ interface CartItem {
   quantity: number;
   stock: number;
   imageUrl?: string;
+  categories?: { category: { name: string } }[];
 }
 
 interface CartContextType {
@@ -19,70 +20,59 @@ interface CartContextType {
   cartCount: number;
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
+  isHydrated: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const getServerSnapshot = () => '[]';
+
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('cart');
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (error) {
-          console.error("Failed to parse cart items from localStorage", error);
-        }
-      }
-    }
-    return [];
-  });
+  const cartString = useSyncExternalStore(
+    (callback) => {
+      window.addEventListener('storage', callback);
+      return () => window.removeEventListener('storage', callback);
+    },
+    () => localStorage.getItem('cart') || '[]',
+    getServerSnapshot
+  );
 
-  const isMounted = useRef(false);
+  let cart: CartItem[] = [];
+  try {
+    cart = JSON.parse(cartString);
+  } catch (e) {
+    console.error("Failed to parse cart items", e);
+  }
 
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+  const saveCart = (newCart: CartItem[]) => {
+    localStorage.setItem('cart', JSON.stringify(newCart));
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const isHydrated = typeof window !== 'undefined';
 
   const addToCart = (item: CartItem) => {
-    setCart(prev => {
-      const exists = prev.find(p => p.id === item.id);
-      if (exists) {
-        return prev.map(p =>
-          p.id === item.id ? { ...p, quantity: p.quantity + item.quantity } : p
-        );
-      }
-      return [...prev, item];
-    });
+    const exists = cart.find(p => p.id === item.id);
+    const newCart = exists
+      ? cart.map(p => p.id === item.id ? { ...p, quantity: p.quantity + item.quantity } : p)
+      : [...cart, item];
+    saveCart(newCart);
   };
 
   const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(p => p.id !== id));
+    saveCart(cart.filter(p => p.id !== id));
   };
 
   const increaseQuantity = (id: string) => {
-    setCart(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+    saveCart(cart.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item));
   };
 
   const decreaseQuantity = (id: string) => {
-    setCart(prev =>
-      prev.map(item =>
-        item.id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
-      )
-    );
+    saveCart(cart.map(item => item.id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item));
   };
 
-  const clearCart = () => setCart([]);
-
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const clearCart = () => saveCart([]);
+  const cartCount = isHydrated ? cart.reduce((sum, item) => sum + item.quantity, 0) : 0;
 
   return (
     <CartContext.Provider
@@ -93,7 +83,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         clearCart,
         cartCount,
         increaseQuantity,
-        decreaseQuantity
+        decreaseQuantity,
+        isHydrated
       }}
     >
       {children}
