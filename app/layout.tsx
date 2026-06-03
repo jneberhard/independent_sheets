@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-
 import "./globals.css";
 
+import { CartProvider } from './context/CartContext';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -18,13 +18,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="flex min-h-screen flex-col">
-        <Header />
+        {/* CartProvider wraps everything inside the body safely */}
+        <CartProvider>
+          <Header />
 
-        <main className="flex-1">
-          {children}
-        </main>
+          <main className="flex-1">
+            {children}
+          </main>
 
-        <Footer />
+          <Footer />
+        </CartProvider> {/* <-- Properly closed at the very bottom */}
       </body>
     </html>
   );
