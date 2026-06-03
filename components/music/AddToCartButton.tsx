@@ -11,14 +11,13 @@ type AddToCartButtonProps = {
     title: string;
     price: number;
     imageUrl?: string | null;
+    categories?: { category: { name: string } }[];
   };
 };
 
 export default function AddToCartButton({ item }: AddToCartButtonProps) {
   const { addToCart, cart } = useCart();
   const [added, setAdded] = useState(false);
-
-  // Check if item is already in the cart
   const isInCart = cart.some((cartItem) => cartItem.id === item.id);
 
   const handleAdd = () => {
@@ -27,12 +26,12 @@ export default function AddToCartButton({ item }: AddToCartButtonProps) {
       title: item.title,
       price: item.price,
       quantity: 1,
-      stock: 1, // Sheet music is digital, so stock can be treated as 1 per customer
+      stock: 1,
       imageUrl: item.imageUrl || undefined,
+      categories: item.categories,
     });
 
     setAdded(true);
-    // Reset the success state bounce after 2 seconds
     setTimeout(() => setAdded(false), 2000);
   };
 

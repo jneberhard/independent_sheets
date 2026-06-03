@@ -87,6 +87,20 @@ export default function CartPage() {
                   <div className="flex flex-1 flex-col justify-between">
                     <div className="flex items-start justify-between gap-2">
                       <div>
+                        {/* NEW: Dynamic Category Badges Block */}
+                        {item.categories && item.categories.length > 0 && (
+                          <div className="mb-1 flex flex-wrap gap-1">
+                            {item.categories.map((cat, index) => (
+                              <span
+                                key={index}
+                                className="inline-flex items-center rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 ring-1 ring-inset ring-blue-700/10 uppercase tracking-wider"
+                              >
+                                {cat.category.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
                         <h3 className="font-bold text-[var(--primary)] text-base sm:text-lg line-clamp-2">
                           {item.title}
                         </h3>
@@ -133,6 +147,7 @@ export default function CartPage() {
               ))}
             </div>
 
+            {/* Right Column: Checkout Sticky Card */}
             <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-6">
               <div className="rounded-2xl border border-[var(--secondary)] bg-white p-6 shadow-sm">
                 <h2 className="text-lg font-bold text-[var(--primary)] border-b border-gray-100 pb-4">
