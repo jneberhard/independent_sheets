@@ -1,5 +1,6 @@
 import { User, Reviews } from "@prisma/client";
 import ReviewForm from "./ReviewForm";
+import DeleteReviewButton from "./DeleteReview";
 
 type ReviewWithUser = Reviews & {
   user: {
@@ -38,6 +39,9 @@ export default function ReviewsSection({ sheetMusicId, reviews, currentUser }: R
 
               return (
                 <div key={review.id} className="rounded-xl border bg-white p-5 shadow-sm space-y-2">
+                  {currentUser?.roleId == "role_admin" || currentUser?.id == review.userId ?  (
+                    <div><DeleteReviewButton reviewId={review.id} /></div>
+                  ) : null}
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-sm text-gray-800">
                       {reviewerName}
