@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const filename = `${Date.now()}-${file.name}`;
     const pathname = folder ? `${folder}/${filename}` : filename;
 
-    const access = "public";
+    const access = "public";  //changed to public
 
     const token = process.env.BLOB_READ_WRITE_TOKEN;
 
