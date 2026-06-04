@@ -3,15 +3,16 @@ import Link from "next/link";
 import LogoutButton from "./LogoutButton";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
+import HeaderCartIcon from "./HeaderCartIcon";
 
 import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma";
 
 export default async function Header() {
-  // Get current logged in user
+  // 1. Get current logged in user safely on the server
   const user = await getCurrentUser();
 
-  // Load categories from database
+  // 2. Load categories from database
   const voicingLinks = await prisma.category.findMany({
     where: {
       group: "VOICING",
@@ -73,7 +74,6 @@ export default async function Header() {
               />
             </div>
 
-            {/* Hide large text on very small screens */}
             <span className="hidden text-3xl font-bold tracking-tight text-white sm:inline">
               Independent Sheets
             </span>
@@ -84,7 +84,7 @@ export default async function Header() {
             <SearchBar />
           </div>
 
-          {/* Desktop Auth Section */}
+          {/* Desktop Auth and Cart Section */}
           <div className="hidden items-center gap-4 md:flex">
             {!isLoggedIn ? (
               <>
@@ -117,13 +117,19 @@ export default async function Header() {
                   </Link>
 
                   <LogoutButton />
+
+                  {/* Safely inject our independent client component here */}
+                  <HeaderCartIcon />
+
                 </div>
               </div>
             )}
           </div>
 
           {/* Mobile Section */}
-          <div className="flex items-center gap-3 md:hidden">
+          <div className="flex items-center gap-4 md:hidden">
+            <HeaderCartIcon isMobile />
+
             <div className="flex flex-col items-end gap-1">
               {/* Hamburger Menu */}
               <MobileMenu
@@ -132,40 +138,32 @@ export default async function Header() {
                 genreLinks={genreLinks}
               />
 
-              {/* Logged In Mobile View */}
+              {/* Logged In Mobile Meta Text */}
               {isLoggedIn ? (
                 <>
-                  <span className="max-w-[160px] truncate text-xs font-medium text-[var(--accent)]">
-                    Logged in as {user.name ?? user.email}
+                  <span className="max-w-[140px] truncate text-[10px] font-medium text-[var(--accent)]">
+                    {user.name ?? user.email}
                   </span>
-
                   <div className="flex items-center gap-2">
                     <Link
                       href={dashboardLink}
-                      className="text-xs font-medium text-[var(--background)] hover:text-[var(--accent)] hover:underline"
+                      className="text-[10px] font-medium text-[var(--background)] hover:text-[var(--accent)] hover:underline"
                     >
                       Dashboard
                     </Link>
-
                     <LogoutButton />
                   </div>
                 </>
               ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="rounded-md border border-white px-3 py-1 text-xs font-medium text-white transition hover:bg-white hover:text-[var(--primary)]"
-                  >
+                <div className="flex items-center gap-2 text-[10px]">
+                  <Link href="/login" className="text-white hover:underline">
                     Login
                   </Link>
-
-                  <Link
-                    href="/register"
-                    className="text-xs font-medium text-[var(--background)] hover:text-[var(--accent)] hover:underline"
-                  >
+                  <span className="text-white/40">|</span>
+                  <Link href="/register" className="text-[var(--accent)] hover:underline">
                     Register
                   </Link>
-                </>
+                </div>
               )}
             </div>
           </div>

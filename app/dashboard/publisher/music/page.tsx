@@ -15,6 +15,7 @@ export default async function PublisherMusicPage() {
     redirect("/dashboard");
   }
 
+  // UPDATED: Include categories relation mapping via Prisma query
   const sheetMusic = await prisma.sheetMusic.findMany({
     where:
       user.role.name === "ADMIN"
@@ -22,6 +23,13 @@ export default async function PublisherMusicPage() {
         : {
             artistId: user.id,
           },
+    include: {
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -58,53 +66,69 @@ export default async function PublisherMusicPage() {
             {sheetMusic.map((music) => (
               <div
                 key={music.id}
-                className="overflow-hidden rounded-xl border bg-white shadow-sm"
+                className="flex flex-col justify-between overflow-hidden rounded-xl border bg-white shadow-sm transition hover:shadow-md"
               >
-                {music.imageUrl ? (
-                  <Image
-                    src={music.imageUrl}
-                    alt={music.title}
-                    width={500}
-                    height={350}
-                    className="h-48 w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-48 items-center justify-center bg-gray-100 text-gray-500">
-                    No image
-                  </div>
-                )}
-
-                <div className="p-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {music.title}
-                  </h2>
-
-                  <p className="mt-1 text-sm text-gray-600">
-                    ${(music.priceCents / 100).toFixed(2)}
-                  </p>
-
-                  {music.description && (
-                    <p className="mt-2 line-clamp-2 text-sm text-gray-600">
-                      {music.description}
-                    </p>
+                <div>
+                  {music.imageUrl ? (
+                    <Image
+                      src={music.imageUrl}
+                      alt={music.title}
+                      width={500}
+                      height={350}
+                      className="h-48 w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-48 items-center justify-center bg-gray-100 text-gray-500">
+                      No image
+                    </div>
                   )}
 
-                  <div className="mt-4 flex gap-3">
-                    <Link
-                      href={`/music/${music.id}`}
-                      className="text-sm font-medium text-blue-600 hover:underline"
-                    >
-                      View
-                    </Link>
+                  <div className="p-4">
+                    {/* NEW: Responsive Category Tags Block */}
+                    <div className="mb-2 flex flex-wrap gap-1">
+                      {music.categories?.map((cat) => (
+                        <span
+                          key={cat.categoryId}
+                          className="inline-flex items-center rounded bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-700/10"
+                        >
+                          {cat.category.name}
+                        </span>
+                      ))}
+                    </div>
 
-                    <Link
-                      href={`/dashboard/publisher/music/${music.id}/edit`}
-                      className="text-sm font-medium text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </Link>
+                    <h2 className="text-lg font-semibold text-gray-900 line-clamp-1">
+                      {music.title}
+                    </h2>
+
+                    <p className="mt-1 text-sm font-medium text-gray-600">
+                      ${(music.priceCents / 100).toFixed(2)}
+                    </p>
+
+                    {music.description && (
+                      <p className="mt-2 line-clamp-2 text-sm text-gray-500">
+                        {music.description}
+                      </p>
+                    )}
                   </div>
                 </div>
+
+                {/* Sticky bottom card actions layout layout block */}
+                <div className="border-t border-gray-100 px-4 py-3 bg-gray-50/50 flex gap-4">
+                  <Link
+                    href={`/music/${music.id}`}
+                    className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition"
+                  >
+                    View Details
+                  </Link>
+
+                  <Link
+                    href={`/dashboard/publisher/music/${music.id}/edit`}
+                    className="text-sm font-semibold text-gray-600 hover:text-gray-900 transition"
+                  >
+                    Edit Layout
+                  </Link>
+                </div>
+
               </div>
             ))}
           </div>
