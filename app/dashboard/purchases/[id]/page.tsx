@@ -33,7 +33,7 @@ export default async function PurchasesPage({ params }: PageProps) {
         <div className="mt-10 rounded-2xl border bg-white p-10 shadow-sm">
           <h2 className="text-3xl font-semibold text-gray-900">{user.name} Order History</h2>
           <p className="mt-4 text-gray-600">
-            Securely viewing data for ID: {id}
+            Securely viewing data for Account: <span className="font-semibold text-gray-900">{user.name ?? user.email}</span>
           </p>
         </div>
       </div>
