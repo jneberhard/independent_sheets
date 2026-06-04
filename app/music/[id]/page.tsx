@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import AddToCartButton from "@/components/music/AddToCartButton";
+import { getCurrentUser } from "@/lib/currentUser";
+import DeleteSongButton from "@/components/music/DeleteSong";
 
 type MusicDetailPageProps = {
   params: Promise<{
@@ -13,6 +15,7 @@ type MusicDetailPageProps = {
 
 export default async function MusicDetailPage({ params }: MusicDetailPageProps) {
   const { id } = await params;
+  const user = await getCurrentUser();
 
   const sheetMusic = await prisma.sheetMusic.findUnique({
     where: {
@@ -52,6 +55,10 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
             <ArrowLeft className="h-4 w-4" />
             Back to Catalog
           </Link>
+
+          {user?.roleId == "role_admin" ? (
+            <DeleteSongButton songId={id} />
+          ) : null}
         </div>
 
         <div className="flex flex-col md:flex-row gap-8">

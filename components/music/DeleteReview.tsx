@@ -28,7 +28,9 @@ export default function DeleteReviewButton({ reviewId, onDeleted }: DeleteReview
         throw new Error(data.error || "Failed to delete review");
       }
 
-      if (onDeleted) onDeleted();
+      if (onDeleted) { 
+        onDeleted();
+      };
       
       router.refresh(); 
 

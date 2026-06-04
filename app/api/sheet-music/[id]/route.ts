@@ -149,3 +149,47 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    if (user.roleId != "role_admin") {
+      return NextResponse.json(
+        { error: "Forbidden: Admins only"},
+        { status: 403 }
+      );
+    }
+
+    const { id } = await params;
+
+    const deletedSong = await prisma.sheetMusic.delete({
+      where: {
+        id,
+      },
+    });
+
+    return NextResponse.json({
+      message: "Song successfully deleted",
+      deletedSong
+    });
+
+  } catch (error) {
+    console.error(`Failed to delete song: ${error}`);
+
+    return NextResponse.json(
+      { error: "Failed to delete song. It may have already been removed." },
+      { status: 500 }
+    );
+  }
+}
