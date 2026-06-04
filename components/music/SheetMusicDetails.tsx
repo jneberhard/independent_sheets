@@ -22,6 +22,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
   const decimalPrice = sheetMusic.priceCents / 100;
 
   return (
+    <div>
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-8 rounded-2xl border border-[var(--secondary)] bg-white p-6 sm:p-8 shadow-sm md:grid-cols-2">
 
@@ -104,12 +105,9 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
           </div>
         </div>
       </div>
-
-      <ReviewsSection
-        sheetMusicId={sheetMusic.id}
-        reviews={sheetMusic.reviews}
-        currentUser={user}
-      />
+      
+    </div>
+    <ReviewsSection sheetMusicId={sheetMusic.id} reviews={sheetMusic.reviews} currentUser={user} />
     </div>
   );
 }
