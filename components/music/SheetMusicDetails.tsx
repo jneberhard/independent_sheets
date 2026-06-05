@@ -22,6 +22,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
   const decimalPrice = sheetMusic.priceCents / 100;
 
   return (
+    <div>
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-8 rounded-2xl border border-[var(--secondary)] bg-white p-6 sm:p-8 shadow-sm md:grid-cols-2">
 
@@ -42,7 +43,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
 
         <div className="flex flex-col justify-between">
           <div>
-            <h2 className="text-3xl font-extrabold tracking-tight text-[var(--primary)]">
+            <h2 className="text-3xl font-extrabold tracking-tight text-black">
               {sheetMusic.title}
             </h2>
 
@@ -63,7 +64,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
           </div>
 
           <div className="mt-8 flex items-center justify-between border-t border-[var(--secondary)] pt-6">
-            <span className="text-3xl font-black text-[var(--primary)]">
+            <span className="text-3xl font-black text-black">
               ${decimalPrice.toFixed(2)}
             </span>
 
@@ -71,7 +72,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
 
               <Link
                 href={`/api/sheet-music/${sheetMusic.id}/download`}
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:opacity-90 transition"
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-bold text-black shadow-sm hover:opacity-70 transition"
               >
                 <Download className="h-4 w-4" />
                 Download PDF
@@ -90,13 +91,13 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
           </div>
           <div className="flex flex-col sm:flex-row items-stretch gap-3">
             <Link href="/catalog" className="flex-1">
-              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--primary)] bg-white py-3 text-center text-sm font-bold text-[var(--primary)] transition hover:bg-[var(--background)] active:scale-[0.99]">
+              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--primary)] bg-white py-3 text-center text-sm font-bold text-black transition hover:bg-[var(--background)] hover:text-white active:scale-[0.99]">
                 Continue Shopping
               </button>
             </Link>
 
             <Link href="/cart" className="flex-1">
-              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-slate-100 py-3 text-center text-sm font-bold text-[var(--primary)] transition hover:bg-slate-200 active:scale-[0.99]">
+              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-slate-100 py-3 text-center text-sm font-bold text-black transition hover:bg-slate-200 active:scale-[0.99]">
                 Go to Checkout
               </button>
             </Link>
@@ -104,12 +105,9 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
           </div>
         </div>
       </div>
-
-      <ReviewsSection
-        sheetMusicId={sheetMusic.id}
-        reviews={sheetMusic.reviews}
-        currentUser={user}
-      />
+      
+    </div>
+    <ReviewsSection sheetMusicId={sheetMusic.id} reviews={sheetMusic.reviews} currentUser={user} />
     </div>
   );
 }
