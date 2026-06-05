@@ -48,7 +48,7 @@ export default function DeleteSongButton({ songId, onDeleted }: DeleteSongButton
     <button
       onClick={handleDelete}
       disabled={isDeleting}
-      className="px-4 py-2 bg-red-50 hover:bg-red-200 text-red-800 font-medium rounded transition disabled:opacity-50"
+      className="px-4 py-2 bg-red-50 hover:bg-red-200 text-red-900 font-medium rounded transition disabled:opacity-50 my-5 border border-red-500"
     >
       {isDeleting ? "Deleting..." : "Delete Song"}
     </button>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-
 import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma";
+import { del } from "@vercel/blob";
 
 type SheetMusicRouteProps = {
   params: Promise<{
@@ -164,7 +164,7 @@ export async function DELETE(
       );
     }
 
-    if (user.roleId != "role_admin") {
+    if (user.roleId !== "role_admin") {
       return NextResponse.json(
         { error: "Forbidden: Admins only"},
         { status: 403 }
@@ -173,14 +173,61 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const deletedSong = await prisma.sheetMusic.delete({
-      where: {
-        id,
+    const sheetMusic = await prisma.sheetMusic.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        imageUrl: true,
+        pdfUrl: true,
+        previewMp3Url: true,
       },
     });
 
+    if (!sheetMusic) {
+      return NextResponse.json(
+        { error: "Sheet music not found" },
+        { status: 404 }
+      );
+    }
+
+    const urlsToDelete: string[] = [];
+    if (sheetMusic.imageUrl) urlsToDelete.push(sheetMusic.imageUrl);
+    if (sheetMusic.pdfUrl) urlsToDelete.push(sheetMusic.pdfUrl);
+    if (sheetMusic.previewMp3Url) urlsToDelete.push(sheetMusic.previewMp3Url);
+
+    if (urlsToDelete.length > 0) {
+      try {
+        await del(urlsToDelete, {
+          token: process.env.BLOB_READ_WRITE_TOKEN,
+        });
+        console.log("Successfully wiped assets from blob storage");
+      } catch (blobError) {
+        console.error("Failed to delete assets from blob storage:", blobError);
+      }
+    }
+
+    const deletedSong = await prisma.$transaction(async (tx) => {
+      await tx.sheetMusicCategory.deleteMany({
+        where: {
+          sheetMusicId: id,
+        },
+      });
+
+      await tx.reviews.deleteMany({
+        where: {
+          sheetMusicId: id,
+        },
+      });
+
+      return tx.sheetMusic.delete({
+        where: {
+          id,
+        },
+      });
+    });
+
     return NextResponse.json({
-      message: "Song successfully deleted",
+      message: "Song and associated files successfully deleted",
       deletedSong
     });
 
@@ -188,7 +235,7 @@ export async function DELETE(
     console.error(`Failed to delete song: ${error}`);
 
     return NextResponse.json(
-      { error: "Failed to delete song. It may have already been removed." },
+      { error: "Failed to delete song." },
       { status: 500 }
     );
   }
