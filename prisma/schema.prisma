@@ -25,6 +25,7 @@ model Role {
 }
 
 model User {
+<<<<<<< HEAD
   id        String  @id @default(cuid())
   email     String  @unique
   firstName String?
@@ -76,6 +77,49 @@ model SheetMusic {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+=======
+  id         String      @id @default(cuid())
+  email      String      @unique
+  name       String?
+  roleId     String
+  role       Role        @relation(fields: [roleId], references: [id])
+  sheetMusic SheetMusic[]
+  purchases  Purchase[]
+  contracts  Contract[]
+<<<<<<< Updated upstream
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+=======
+  reviews    Review[]
+  downloads  Download[]
+  activities CustomerActivity[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+>>>>>>> Stashed changes
+}
+
+model SheetMusic {
+  id            String      @id @default(cuid())
+  title         String
+  description   String?
+  priceCents    Int
+  pdfUrl        String
+  previewMp3Url String?
+  previewLink   String?
+  artistId      String
+  artist        User        @relation(fields: [artistId], references: [id])
+  purchases     Purchase[]
+<<<<<<< Updated upstream
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+=======
+  reviews       Review[]
+  downloads     Download[]
+  activities    CustomerActivity[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+>>>>>>> Stashed changes
+>>>>>>> 411d0ae83b0c111d6b6ea128c7ecbcd7bc28a458
 }
 
 model Purchase {
@@ -106,9 +150,19 @@ model Contract {
   royaltyPercent Float
   startDate      DateTime
   endDate        DateTime?
+<<<<<<< HEAD
   createdAt      DateTime  @default(now())
 
   artist User @relation("UserContracts", fields: [artistId], references: [id])
+=======
+<<<<<<< Updated upstream
+  createdAt      DateTime @default(now())
+  artist         User     @relation(fields: [artistId], references: [id])
+}
+=======
+  createdAt      DateTime  @default(now())
+  artist         User      @relation(fields: [artistId], references: [id])
+>>>>>>> 411d0ae83b0c111d6b6ea128c7ecbcd7bc28a458
 }
 
 model Publisher {
@@ -171,6 +225,7 @@ model SheetMusicCategory {
   @@unique([sheetMusicId, categoryId])
 }
 
+<<<<<<< HEAD
 model Reviews {
   id           String @id @default(cuid())
   reviewText   String
@@ -181,3 +236,52 @@ model Reviews {
   sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
   user       User       @relation(fields: [userId], references: [id])
 }
+=======
+model Review {
+  id           String   @id @default(cuid())
+  sheetMusicId String
+  reviewerId   String
+  rating       Int      @db.SmallInt
+  title        String?
+  comment      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id], onDelete: Cascade)
+  reviewer   User       @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@unique([sheetMusicId, reviewerId])
+}
+
+model Download {
+  id           String   @id @default(cuid())
+  sheetMusicId String
+  downloaderId String
+  downloadedAt DateTime @default(now())
+
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id], onDelete: Cascade)
+  downloader User       @relation(fields: [downloaderId], references: [id], onDelete: Cascade)
+
+  @@index([sheetMusicId])
+  @@index([downloadedAt])
+}
+
+model CustomerActivity {
+  id           String   @id @default(cuid())
+  sheetMusicId String
+  customerId   String
+  activityType String
+  metadata     String?
+  createdAt    DateTime @default(now())
+
+  sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id], onDelete: Cascade)
+  customer   User       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([sheetMusicId])
+  @@index([customerId])
+  @@index([activityType])
+  @@index([createdAt])
+}
+
+>>>>>>> Stashed changes
+>>>>>>> 411d0ae83b0c111d6b6ea128c7ecbcd7bc28a458

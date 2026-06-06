@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import CustomerNav from "@/components/authdashboard/CustomerNav";
 import { getCurrentUser } from "@/lib/currentUser";
 
-export default async function PublisherDashboardPage() {
+export default async function AdminDashboardPage() {
   const user = await getCurrentUser();
 
   if (!user) {
