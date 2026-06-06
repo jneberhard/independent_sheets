@@ -320,7 +320,213 @@ async function main() {
     }
   }
 
-  console.log("Seed completed successfully.");
+  // ====== CREATE ADDITIONAL PUBLISHERS FOR ADMIN ROYALTY REPORTS ======
+  console.log("\n📊 Creating test data for Admin Royalty Reports...");
+
+  const adminRole = await prisma.role.findUnique({
+    where: {
+      name: RoleName.ADMIN,
+    },
+  });
+
+  // Create an admin user if doesn't exist
+  const adminUser = await prisma.user.upsert({
+    where: {
+      email: "admin@independentsheets.com",
+    },
+    update: {
+      name: "Admin User",
+      roleId: adminRole?.id,
+    },
+    create: {
+      email: "admin@independentsheets.com",
+      name: "Admin User",
+      roleId: adminRole?.id || "",
+    },
+  });
+
+  // Create multiple publishers
+  const publisherEmails = [
+    "sarah.mitchell@publisher.com",
+    "james.chen@publisher.com",
+    "emily.roberts@publisher.com",
+  ];
+
+  const publisherNames = [
+    { first: "Sarah", last: "Mitchell" },
+    { first: "James", last: "Chen" },
+    { first: "Emily", last: "Roberts" },
+  ];
+
+  const publishersForRoyalties = [];
+
+  for (let i = 0; i < publisherEmails.length; i++) {
+    const pubUser = await prisma.user.upsert({
+      where: {
+        email: publisherEmails[i],
+      },
+      update: {
+        name: `${publisherNames[i].first} ${publisherNames[i].last}`,
+        roleId: publisherRole?.id,
+      },
+      create: {
+        email: publisherEmails[i],
+        firstName: publisherNames[i].first,
+        lastName: publisherNames[i].last,
+        name: `${publisherNames[i].first} ${publisherNames[i].last}`,
+        roleId: publisherRole?.id || "",
+      },
+    });
+
+    const publisher = await prisma.publisher.upsert({
+      where: { userId: pubUser.id },
+      update: {},
+      create: {
+        userId: pubUser.id,
+        firstName: publisherNames[i].first,
+        lastName: publisherNames[i].last,
+        displayName: `${publisherNames[i].first} ${publisherNames[i].last}`,
+        addressLine1: `${100 + i * 10} Music Street`,
+        city: "Nashville",
+        stateProvince: "TN",
+        postalCode: `3720${i}`,
+        country: "USA",
+        phoneNumber: `615-555-000${i}`,
+        paypalEmail: `${publisherEmails[i].split("@")[0]}@paypal.com`,
+        preferredPaymentMethod: "paypal",
+        uploadingOriginalWorks: true,
+        uploadingArrangements: true,
+        ownsOrControlsRights: true,
+        acceptedAgreement: true,
+      },
+    });
+
+    publishersForRoyalties.push(pubUser);
+
+    // Create contract for each publisher
+    await prisma.contract.upsert({
+      where: { id: `contract-${pubUser.id}` },
+      update: {},
+      create: {
+        id: `contract-${pubUser.id}`,
+        artistId: pubUser.id,
+        royaltyPercent: 75,
+        startDate: new Date("2024-01-01"),
+        endDate: null,
+      },
+    });
+  }
+
+  console.log(`✓ Created ${publishersForRoyalties.length} publishers with contracts`);
+
+  // Create more customers
+  const customerEmails = [
+    "buyer1@example.com",
+    "buyer2@example.com",
+    "buyer3@example.com",
+    "buyer4@example.com",
+    "buyer5@example.com",
+  ];
+
+  const buyersForPurchases = [];
+
+  for (const email of customerEmails) {
+    const buyer = await prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        email,
+        firstName: email.split("@")[0],
+        lastName: "Buyer",
+        roleId: customerRole?.id || "",
+      },
+    });
+    buyersForPurchases.push(buyer);
+  }
+
+  console.log(`✓ Created ${buyersForPurchases.length} test buyers`);
+
+  // Create sheet music for the new publishers
+  const songTitles = [
+    "Amazing Grace",
+    "The Water is Wide",
+    "Shenandoah",
+    "Simple Gifts",
+    "Danny Boy",
+    "Lux Aeterna",
+    "Ave Verum Corpus",
+    "O Magnum Mysterium",
+  ];
+
+  const sheetMusicList = [];
+
+  for (const publisher of publishersForRoyalties) {
+    for (let i = 0; i < 4; i++) {
+      const song = await prisma.sheetMusic.create({
+        data: {
+          title: `${songTitles[i % songTitles.length]} (Arrangement ${i + 1})`,
+          description: `Beautiful arrangement by ${publisher.name}`,
+          priceCents: 399 + i * 100,
+          pdfUrl: `https://example.com/music/${publisher.id}-${i}.pdf`,
+          imageUrl: `https://example.com/covers/music-${i}.jpg`,
+          artistId: publisher.id,
+          previewMp3Url: `https://example.com/preview/${publisher.id}-${i}.mp3`,
+          rightsVerified: true,
+        },
+      });
+      sheetMusicList.push(song);
+    }
+  }
+
+  console.log(`✓ Created ${sheetMusicList.length} sheet music items`);
+
+  // Create multiple purchases and royalties
+  let purchaseCount = 0;
+  for (let i = 0; i < 30; i++) {
+    const randomSheet = sheetMusicList[Math.floor(Math.random() * sheetMusicList.length)];
+    const randomBuyer = buyersForPurchases[Math.floor(Math.random() * buyersForPurchases.length)];
+
+    const purchase = await prisma.purchase.create({
+      data: {
+        buyerId: randomBuyer.id,
+        sheetMusicId: randomSheet.id,
+        amountCents: randomSheet.priceCents,
+      },
+    });
+
+    // Create royalty split: 75% artist, 25% platform
+    const artistAmount = Math.round(randomSheet.priceCents * 0.75);
+    const platformAmount = randomSheet.priceCents - artistAmount;
+
+    await prisma.royalty.create({
+      data: {
+        purchaseId: purchase.id,
+        artistAmount,
+        platformAmount,
+      },
+    });
+
+    purchaseCount++;
+  }
+
+  console.log(`✓ Created ${purchaseCount} purchases with royalties\n`);
+
+  // Print summary
+  const totalRoyalties = await prisma.royalty.count();
+  const totalContracts = await prisma.contract.count();
+  const totalPublishers = await prisma.publisher.count();
+
+  console.log("✅ Seed completed successfully!");
+  console.log(`\n📊 Database Summary:`);
+  console.log(`   • Total Royalties: ${totalRoyalties}`);
+  console.log(`   • Total Contracts: ${totalContracts}`);
+  console.log(`   • Total Publishers: ${totalPublishers}`);
+  console.log(`   • Total Sheet Music: ${await prisma.sheetMusic.count()}`);
+  console.log(`   • Total Purchases: ${await prisma.purchase.count()}`);
+  console.log(`\n🎯 Test Accounts:`);
+  console.log(`   • Admin: admin@independentsheets.com`);
+  console.log(`   • Demo Publisher: demo.publisher@independentsheets.com`);
+  console.log(`   • Demo Customer: demo.customer@independentsheets.com`);
 }
 
 main()

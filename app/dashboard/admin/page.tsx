@@ -81,7 +81,7 @@ export default async function PublisherDashboardPage() {
           </Link>
 
           <Link
-            href="/dashboard/publisher/sales"
+            href="/dashboard/admin/royalties"
             className="group rounded-3xl border border-[var(--primary)] bg-[var(--secondary)] p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="inline-flex rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white">
@@ -89,15 +89,15 @@ export default async function PublisherDashboardPage() {
             </div>
 
             <h2 className="mt-5 text-2xl font-bold text-[var(--primary)]">
-              Sales Reports
+              Royalty Reports
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-[var(--primary)]">
-              Review purchases and royalty earnings.
+              View sales, earnings, and publisher payouts.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-[var(--primary)] group-hover:underline">
-              Review sales →
+              View reports →
             </div>
           </Link>
 
@@ -118,23 +118,44 @@ export default async function PublisherDashboardPage() {
           </div>
 
           <Link
-            href="/account"
+            href="/dashboard/admin/contracts"
             className="group rounded-3xl border border-[var(--primary)] bg-[var(--secondary)] p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="inline-flex rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white">
-              Account
+              Management
             </div>
 
             <h2 className="mt-5 text-2xl font-bold text-[var(--primary)]">
-              Account Editor
+              Contract Management
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-[var(--primary)]">
-              Change account info and password.
+              Manage publisher contracts and royalty percentages.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-[var(--primary)] group-hover:underline">
-              Account Management →
+              Manage contracts →
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/admin/payouts"
+            className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-semibold text-[var(--primary)]">
+              Payments
+            </div>
+
+            <h2 className="mt-5 text-2xl font-bold">
+              Payout Management
+            </h2>
+
+            <p className="mt-4 text-sm leading-7 text-white">
+              Track and process publisher payments.
+            </p>
+
+            <div className="mt-6 text-sm font-semibold text-white group-hover:underline">
+              Manage payouts →
             </div>
           </Link>
         </section>
