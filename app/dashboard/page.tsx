@@ -11,8 +11,11 @@ export default async function PublisherDashboardPage() {
     redirect("/login");
   }
 
-  if (user.role.name !== "PUBLISHER" && user.role.name !== "ADMIN") {
-    redirect("/dashboard");
+  if (user.role.name == "PUBLISHER") {
+    redirect("/dashboard/publisher");
+  }
+  else if (user.role.name == "ADMIN") {
+    redirect("/dashboard/admin");
   }
 
   return (
