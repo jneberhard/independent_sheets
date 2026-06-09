@@ -19,7 +19,7 @@ export default function HeaderCartIcon({ isMobile = false }: HeaderCartIconProps
       }`}
       >
           
-      <ShoppingCart className={`${isMobile ? "h-5 w-5" : "h-6 w-6"} text-white`} />
+      <ShoppingCart className={`${isMobile ? "h-5 w-5" : "h-6 w-6"} text-black`} />
 
       {cartCount > 0 && (
         <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold shadow-md">

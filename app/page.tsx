@@ -140,12 +140,14 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
-            <h1 className="text-5xl font-bold tracking-tight">
-              Independent Sheets
-            </h1>
-            <p className="mt-4 max-w-2xl text-lg">
-              Discover quality sheet music for choirs, soloists, and instrumental ensembles.
-            </p>
+            <div className="bg-black/40 p-5 rounded-lg">
+              <h1 className="text-5xl font-bold tracking-tight">
+                Independent Sheets
+              </h1>
+              <p className="mt-4 max-w-2xl text-lg">
+                Discover quality sheet music for choirs, soloists, and instrumental ensembles.
+              </p>
+            </div>
           </div>
         </section>
 

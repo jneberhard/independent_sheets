@@ -6,7 +6,7 @@
   --card: #FFFFFF;
   --primary: #3A2D32;
   --secondary: #DBB4AD;
-  --accent: #A2AD91;
+  --accent: #646D5A;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,7 +16,7 @@
     --card: #4A3940;
     --primary: #FFE3DC;
     --secondary: #DBB4AD;
-    --accent: #A2AD91;
+    --accent: #646D5A;
   }
 }
 
