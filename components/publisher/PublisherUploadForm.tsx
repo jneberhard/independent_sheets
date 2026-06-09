@@ -33,6 +33,8 @@ export default function PublisherUploadForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function toggleCategory(categoryId: string) {
+    // We keep the selected categories in a flat list so the form stays simple
+    // even though the UI shows them in three different groups.
     setSelectedCategoryIds((current) =>
       current.includes(categoryId)
         ? current.filter((id) => id !== categoryId)
@@ -61,6 +63,8 @@ export default function PublisherUploadForm({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    // The form is strict here because we want the upload to fail early with a clear
+    // message instead of sending half-finished data to the database.
     if (!pdfFile) {
       alert("Please upload the full PDF sheet music file.");
       return;
@@ -202,6 +206,11 @@ export default function PublisherUploadForm({
         <label className="block text-sm font-semibold text-gray-700">
           Sheet Music PDF
         </label>
+
+        <p className="mt-1 text-xs text-gray-500">
+          When you upload this PDF, the system also creates a 2-page sample
+          preview for customers to view.
+        </p>
 
         <div className="mt-2 flex items-center gap-4">
           <label className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600">

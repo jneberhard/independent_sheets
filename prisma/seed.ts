@@ -21,6 +21,7 @@ function slugify(value: string) {
 }
 
 async function main() {
+  // Seed the roles first because the rest of the demo data depends on them.
   await prisma.role.upsert({
     where: {
       name: RoleName.USER,
@@ -70,6 +71,8 @@ async function main() {
   ];
 
   for (const category of voicings) {
+    // Voicing categories help the catalog page group choir music in a way
+    // that matches how singers actually search for pieces.
     await prisma.category.upsert({
       where: {
         group_slug: {
@@ -103,6 +106,7 @@ async function main() {
   ];
 
   for (const category of instruments) {
+    // Instrument categories let us support accompaniment and ensemble-specific browsing.
     await prisma.category.upsert({
       where: {
         group_slug: {
@@ -131,6 +135,7 @@ async function main() {
   ];
 
   for (const category of genres) {
+    // Genre categories are useful for broad navigation and for quick demo filtering.
     await prisma.category.upsert({
       where: {
         group_slug: {
@@ -231,6 +236,7 @@ async function main() {
   ];
 
   for (const song of demoSongs) {
+    // These demo songs give Benjamin real-looking records for detail-page and catalog testing.
     const existingSong = await prisma.sheetMusic.findFirst({
       where: {
         artistId: demoPublisher.id,
@@ -299,6 +305,7 @@ async function main() {
     });
 
     if (!existingPurchase) {
+      // The sample purchase proves the royalty split and download flow both have real data to read.
       const artistAmount = Math.round(demoPurchaseSheetMusic.priceCents * 0.75);
       const platformAmount = demoPurchaseSheetMusic.priceCents - artistAmount;
 

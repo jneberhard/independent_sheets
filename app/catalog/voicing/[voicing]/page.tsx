@@ -13,6 +13,7 @@ export default async function VoicingCatalogPage({
 }: VoicingCatalogPageProps) {
   const { voicing } = await params;
 
+  // This route only chooses the voicing group and passes the work to the shared page.
   return (
     <CategoryCatalogPage
       group={CategoryGroup.VOICING}

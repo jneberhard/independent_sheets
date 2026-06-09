@@ -5,6 +5,8 @@ import { Prisma, RoleName } from "@prisma/client";
 export async function getCurrentUser() {
   const { data: session } = await auth.getSession();
 
+  // If there is no active session email, we stop early because the rest of the app
+  // depends on having a real user record to work with.
   if (!session?.user?.email) {
     return null;
   }
@@ -23,6 +25,8 @@ export async function getCurrentUser() {
     return user;
   }
 
+  // New OAuth sign-ins can reach here before a matching user row exists in Neon.
+  // We create the row once, then reuse it on later requests.
   const userRole = await prisma.role.findUnique({
     where: {
       name: RoleName.USER,
