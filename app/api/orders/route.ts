@@ -1,61 +1,67 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/auth/server';
 import { getCurrentUser } from "@/lib/currentUser";
 
-/**
- * GET: Fetch all digital purchases for the logged-in buyer profile context
- */
+// GET: Fetch all digital purchases for the logged-in buyer profile context
 export async function GET() {
   try {
-    const { data: session } = await auth.getSession();
+    const currentUser = await getCurrentUser();
 
     // Check auth status based on server-session architecture
-    if (!session?.user?.id) {
+    if (!currentUser?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const purchases = await prisma.purchase.findMany({
-      where: { buyerId: session.user.id },
-      orderBy: { purchasedAt: 'desc' },
+    // Fetch orders instead of individual purchases to keep things grouped
+    const orders = await prisma.order.findMany({
+      where: { buyerId: currentUser.id },
+      orderBy: { createdAt: 'desc' },
       include: {
-        sheetMusic: {
-          select: {
-            id: true,
-            title: true,
-            imageUrl: true,
+        purchases: {
+          include: {
+            sheetMusic: {
+              select: {
+                id: true,
+                title: true,
+                imageUrl: true,
+              },
+            },
           },
         },
       },
     });
 
-    // Format output payload structures cleanly for display components
-    const formattedPurchases = purchases.map((purchase) => ({
-      id: purchase.id,
-      total: purchase.amountCents / 100, // Converts cents back to dollars for the frontend layout
-      purchasedAt: purchase.purchasedAt,
-      sheetMusic: purchase.sheetMusic,
+    // Format output payload structures cleanly for the PurchaseHistory table component
+    const formattedOrders = orders.map((order) => ({
+      id: order.id,
+      total: order.totalCents / 100,
+      purchasedAt: order.createdAt,
+      itemCount: order.purchases.reduce((sum, p) => sum + p.quantity, 0),
+      items: order.purchases.map((p) => ({
+        id: p.id,
+        title: p.sheetMusic?.title || 'Digital Sheet Music',
+        imageUrl: p.sheetMusic?.imageUrl,
+        quantity: p.quantity,
+      }))
     }));
 
-    return NextResponse.json(formattedPurchases);
+    return NextResponse.json(formattedOrders);
   } catch (error) {
-    console.error('Error fetching system digital purchases:', error);
+    console.error('Error fetching system digital orders:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch transaction purchase records' },
+      { error: 'Failed to fetch transaction order records' },
       { status: 500 }
     );
   }
 }
 
-/**
- * POST: Finalize digital authorization checkout transaction pipelines
- */
+//POST: Finalize digital authorization checkout transaction pipelines
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { items, customer } = body;
 
-    // 2. Swap this block to look EXACTLY like your profile route
     const currentUser = await getCurrentUser();
     const targetUserId = currentUser?.id || customer?.userId;
 
@@ -81,7 +87,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Authorization cart collection is empty' }, { status: 400 });
     }
 
-    // 2. Fetch target user via the guaranteed server-verified id string
     const existingUser = await prisma.user.findUnique({
       where: { id: targetUserId },
       select: {
@@ -114,8 +119,9 @@ export async function POST(req: Request) {
     if (!existingUser.stateProvince && stateProvince) profileUpdates.stateProvince = stateProvince;
     if (!existingUser.postalCode && postalCode) profileUpdates.postalCode = postalCode;
 
-    const result = await prisma.$transaction(async (tx) => {
-
+    //  UPDATED TRANSACTION PIPELINE
+    const parentOrder = await prisma.$transaction(async (tx) => {
+      // Handle background profile context updates first
       if (Object.keys(profileUpdates).length > 0) {
         await tx.user.update({
           where: { id: targetUserId },
@@ -123,35 +129,50 @@ export async function POST(req: Request) {
         });
       }
 
-      const completedPurchases = [];
+      let grandTotalCents = 0;
+      const orderItemsToCreate = [];
 
+      // Validate items array pricing snapshots from DB
       for (const item of items) {
         const pieceOfMusic = await tx.sheetMusic.findUnique({
           where: { id: item.id },
-          select: { priceCents: true, title: true, artistId: true }
+          select: { priceCents: true }
         });
 
         if (!pieceOfMusic) {
           throw new Error(`CRITICAL_MISSING_PIECE:${item.id}`);
         }
 
-        const singlePurchase = await tx.purchase.create({
-          data: {
-            buyerId: targetUserId, // Guarantees this points to an existing database user
-            sheetMusicId: item.id,
-            amountCents: pieceOfMusic.priceCents * (item.quantity || 1),
-          }
-        });
+        const itemQty = item.quantity || 1;
+        const totalItemCostCents = pieceOfMusic.priceCents * itemQty;
+        grandTotalCents += totalItemCostCents;
 
-        completedPurchases.push(singlePurchase);
+        orderItemsToCreate.push({
+          buyerId: targetUserId,
+          sheetMusicId: item.id,
+          amountCents: totalItemCostCents,
+          quantity: itemQty
+        });
       }
 
-      return completedPurchases[0];
+      // Create the single Parent Order record, nesting the generated line purchases inside it
+      const createdOrder = await tx.order.create({
+        data: {
+          buyerId: targetUserId,
+          totalCents: grandTotalCents,
+          purchases: {
+            create: orderItemsToCreate
+          }
+        }
+      });
+
+      return createdOrder;
     });
 
+    // Safely hand back the actual Master parent invoice Order record ID to the client application execution context
     return NextResponse.json({
       success: true,
-      orderId: result.id
+      orderId: parentOrder.id
     });
 
   } catch (err: unknown) {

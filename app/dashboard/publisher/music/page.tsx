@@ -125,7 +125,7 @@ export default async function PublisherMusicPage() {
                     href={`/dashboard/publisher/music/${music.id}/edit`}
                     className="text-sm font-semibold text-gray-600 hover:text-gray-900 transition"
                   >
-                    Edit Layout
+                    Edit
                   </Link>
                 </div>
 

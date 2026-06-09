@@ -1,8 +1,6 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getCurrentUser } from "@/lib/currentUser";
-import { getSheetMusicDetails } from "@/lib/music/musicdetails";
 import DeleteSongButton from "@/components/music/DeleteSong";
 import SheetMusicDetails from "@/components/music/SheetMusicDetails";
 
@@ -15,12 +13,6 @@ type MusicDetailPageProps = {
 export default async function MusicDetailPage({ params }: MusicDetailPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();
-
-  const sheetMusic = await getSheetMusicDetails(id)
-
-  if (!sheetMusic) {
-    notFound();
-  }
 
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6">
@@ -38,7 +30,7 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
 
         {user?.roleId == "role_admin" ? (<DeleteSongButton songId={id} />) : null}
 
-        <SheetMusicDetails id={sheetMusic.id} />
+        <SheetMusicDetails id={id} />
         </div>
     </main>
   );

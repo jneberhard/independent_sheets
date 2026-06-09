@@ -16,6 +16,9 @@ type SheetMusicForEdit = {
   description: string | null;
   priceCents: number;
   imageUrl: string | null;
+  pdfUrl?: string | null;
+  previewLink?: string | null;
+  previewMp3Url?: string | null;
   categories: {
     id: string;
     sheetMusicId: string;
@@ -48,6 +51,9 @@ export default function EditSheetMusicForm({
     String(sheetMusic.priceCents)
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [mp3File, setMp3File] = useState<File | null>(null);
+
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(
     sheetMusic.categories.map((item) => item.categoryId)
   );
@@ -63,11 +69,10 @@ export default function EditSheetMusicForm({
     });
   }
 
-  async function uploadImage(file: File) {
+  async function uploadFile(file: File, folder: string) {
     const formData = new FormData();
-
     formData.append("file", file);
-    formData.append("folder", "images");
+    formData.append("folder", folder);
 
     const response = await fetch("/api/upload", {
       method: "POST",
@@ -75,7 +80,7 @@ export default function EditSheetMusicForm({
     });
 
     if (!response.ok) {
-      throw new Error("Image upload failed");
+      throw new Error(`Upload to ${folder} failed`);
     }
 
     return response.json();
@@ -83,15 +88,28 @@ export default function EditSheetMusicForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     setIsSaving(true);
 
     try {
       let imageUrl = sheetMusic.imageUrl;
+      let pdfUrl = sheetMusic.pdfUrl;
+      let previewLink = sheetMusic.previewLink;
+      let previewMp3Url = sheetMusic.previewMp3Url;
 
       if (imageFile) {
-        const imageUpload = await uploadImage(imageFile);
+        const imageUpload = await uploadFile(imageFile, "images");
         imageUrl = imageUpload.url;
+      }
+
+      if (pdfFile) {
+        const pdfUpload = await uploadFile(pdfFile, "sheet-music");
+        pdfUrl = pdfUpload.url;
+        previewLink = pdfUpload.previewUrl;
+      }
+
+      if (mp3File) {
+        const mp3Upload = await uploadFile(mp3File, "previews");
+        previewMp3Url = mp3Upload.url;
       }
 
       const response = await fetch(`/api/sheet-music/${sheetMusic.id}`, {
@@ -104,6 +122,9 @@ export default function EditSheetMusicForm({
           description,
           priceCents: Number(priceCents),
           imageUrl,
+          pdfUrl,
+          previewLink,
+          previewMp3Url,
           categoryIds: selectedCategoryIds,
         }),
       });
@@ -198,34 +219,71 @@ export default function EditSheetMusicForm({
       {renderCategoryCheckboxes("Instrumentation", instrumentations)}
       {renderCategoryCheckboxes("Categories", categories)}
 
-      <div>
-        <label className="block text-sm font-semibold text-gray-700">
-          Re-upload Image Artwork
-        </label>
+      <div className="space-y-4 border-t pt-4">
+        <h3 className="text-sm font-bold text-gray-900">Media Files Updates</h3>
 
-        <div className="mt-2 flex items-center gap-4">
-          <label className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600">
-            Choose File
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              className="hidden"
-              onChange={(event) =>
-                setImageFile(event.target.files?.[0] ?? null)
-              }
-            />
+        {/* Sheet Music PDF Upload Entry */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700">
+            Replace Full Score PDF (Triggers Sample Auto-Generation)
           </label>
-
-          <span className="text-sm text-gray-600">
-            {imageFile ? imageFile.name : "No new image selected"}
-          </span>
+          <div className="mt-2 flex items-center gap-4">
+            <label className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600">
+              Choose PDF
+              <input
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={(event) => setPdfFile(event.target.files?.[0] ?? null)}
+              />
+            </label>
+            <span className="text-sm text-gray-600">
+              {pdfFile ? pdfFile.name : "No new score selected"}
+            </span>
+          </div>
         </div>
 
-        {sheetMusic.imageUrl && (
-          <p className="mt-2 text-xs text-gray-500">
-            Current image URL saved.
-          </p>
-        )}
+        {/* Audio MP3 Upload Entry */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700">
+            Upload / Replace Preview MP3
+          </label>
+          <div className="mt-2 flex items-center gap-4">
+            <label className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600">
+              Choose MP3
+              <input
+                type="file"
+                accept="audio/mpeg,audio/mp3"
+                className="hidden"
+                onChange={(event) => setMp3File(event.target.files?.[0] ?? null)}
+              />
+            </label>
+            <span className="text-sm text-gray-600">
+              {mp3File ? mp3File.name : "No new audio selected"}
+            </span>
+          </div>
+        </div>
+
+        {/* Image Artwork Interface */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700">
+            Replace Image Artwork
+          </label>
+          <div className="mt-2 flex items-center gap-4">
+            <label className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600">
+              Choose Image
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
+              />
+            </label>
+            <span className="text-sm text-gray-600">
+              {imageFile ? imageFile.name : "No new image selected"}
+            </span>
+          </div>
+        </div>
       </div>
 
       <button
@@ -233,7 +291,7 @@ export default function EditSheetMusicForm({
         disabled={isSaving}
         className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-400"
       >
-        {isSaving ? "Saving..." : "Save Changes"}
+        {isSaving ? "Uploading Files & Saving Changes..." : "Save Changes"}
       </button>
     </form>
   );
