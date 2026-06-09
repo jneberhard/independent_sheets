@@ -30,6 +30,7 @@ model User {
   firstName String?
   lastName  String?
   name      String?
+  active    Boolean @default(true)
 
   authProvider String  @default("credentials")
   passwordHash String?
@@ -51,13 +52,14 @@ model User {
   purchases  Purchase[]   @relation("UserPurchases")
   contracts  Contract[]   @relation("UserContracts")
   reviews    Reviews[]
+  orders     Order[]      @relation("UserOrders")
 
   createdAt DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 }
 
 model SheetMusic {
-  id             String   @id @default(cuid())
+  id             String  @id @default(cuid())
   title          String
   description    String?
   priceCents     Int
@@ -65,7 +67,7 @@ model SheetMusic {
   imageUrl       String?
   previewMp3Url  String?
   previewLink    String?
-  rightsVerified Boolean  @default(false)
+  rightsVerified Boolean @default(false)
 
   artistId String
   artist   User   @relation("UserSheetMusic", fields: [artistId], references: [id])
@@ -84,6 +86,10 @@ model Purchase {
   sheetMusicId String
   amountCents  Int
   purchasedAt  DateTime @default(now())
+
+  quantity Int     @default(1)
+  orderId  String?
+  order    Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   buyer      User       @relation("UserPurchases", fields: [buyerId], references: [id])
   sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
@@ -180,4 +186,16 @@ model Reviews {
 
   sheetMusic SheetMusic @relation(fields: [sheetMusicId], references: [id])
   user       User       @relation(fields: [userId], references: [id])
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  totalCents Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  buyerId String
+  buyer   User   @relation("UserOrders", fields: [buyerId], references: [id])
+
+  purchases Purchase[]
 }

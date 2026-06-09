@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-
 import EditSheetMusicForm from "@/components/publisher/EditSheetMusicForm";
 import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma";
@@ -10,7 +9,7 @@ type EditSheetMusicPageProps = {
   }>;
 };
 
-//server page for the Edit Sheet Music
+// server page for the Edit Sheet Music
 export default async function EditSheetMusicPage({
   params,
 }: EditSheetMusicPageProps) {
@@ -30,7 +29,17 @@ export default async function EditSheetMusicPage({
     where: {
       id,
     },
-    include: {
+    // fetch the audio and document properties from schema
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      priceCents: true,
+      imageUrl: true,
+      pdfUrl: true,
+      previewLink: true,
+      previewMp3Url: true,
+      artistId: true,
       categories: {
         include: {
           category: true,
@@ -84,7 +93,7 @@ export default async function EditSheetMusicPage({
         </h1>
 
         <p className="mt-2 text-gray-600">
-          Update the image artwork, title, price, or description.
+          Update the image artwork, media assets, title, price, or description.
         </p>
 
         <EditSheetMusicForm

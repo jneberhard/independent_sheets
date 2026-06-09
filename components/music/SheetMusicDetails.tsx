@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Download } from "lucide-react";
+import { Download, Music, FileText } from "lucide-react";
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/currentUser";
 import { getSheetMusicDetails } from "@/lib/music/musicdetails";
@@ -23,9 +23,51 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
 
   return (
     <div>
-    <div className="space-y-8">
+      <div className="space-y-8">
+        {/* PREVIEW AUDIO & SCORE EXTENSION PANEL */}
+      <div className="grid gap-6 rounded-2xl border border-[var(--secondary)] bg-white p-6 sm:p-8 shadow-sm">
+        <h3 className="text-xl font-bold text-black mb-2">Free Previews</h3>
+
+        {/* Audio Layer */}
+        {sheetMusic.previewMp3Url ? (
+          <div className="rounded-xl border bg-slate-50 p-4">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <Music className="h-4 w-4 text-gray-900" />
+              <span>Audio Demo Preview</span>
+            </div>
+            <audio
+              src={sheetMusic.previewMp3Url}
+              controls
+              controlsList="nodownload"
+              className="w-full focus:outline-none"
+            />
+          </div>
+        ) : null}
+
+        {/* 2-Page Watermarked Sample */}
+        {sheetMusic.previewLink ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <FileText className="h-4 w-4 text-gray-900" />
+              <span>Score Sample Excerpt (First 2 Pages)</span>
+            </div>
+            <div className="overflow-hidden rounded-xl border bg-gray-100 shadow-inner">
+              <iframe
+                src={`${sheetMusic.previewLink}#toolbar=0&navpanes=0`}
+                className="h-[600px] w-full border-0"
+                title={`Sample Score - ${sheetMusic.title}`}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed p-6 text-center text-sm text-gray-400">
+            No partial look-ahead score copy is generated for this entry.
+          </div>
+        )}
+      </div>
       <div className="grid grid-cols-1 gap-8 rounded-2xl border border-[var(--secondary)] bg-white p-6 sm:p-8 shadow-sm md:grid-cols-2">
 
+          {/*Image Preview Section */}
         <div className="relative flex aspect-[3/4] w-full items-center justify-center rounded-xl border border-[var(--secondary)] bg-[var(--background)] overflow-hidden">
           {sheetMusic.imageUrl ? (
             <Image
@@ -41,6 +83,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
           )}
         </div>
 
+        {/* Details Section */}
         <div className="flex flex-col justify-between">
           <div>
             <h2 className="text-3xl font-extrabold tracking-tight text-black">
@@ -69,7 +112,6 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
             </span>
 
             {sheetMusic.canDownload ? (
-
               <Link
                 href={`/api/sheet-music/${sheetMusic.id}/download`}
                 className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-bold text-black shadow-sm hover:opacity-70 transition"
@@ -105,7 +147,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
           </div>
         </div>
       </div>
-      
+
     </div>
     <ReviewsSection sheetMusicId={sheetMusic.id} reviews={sheetMusic.reviews} currentUser={user} />
     </div>

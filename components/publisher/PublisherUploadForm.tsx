@@ -28,6 +28,7 @@ export default function PublisherUploadForm({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [rightsVerified, setRightsVerified] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function toggleCategory(categoryId: string) {
     setSelectedCategoryIds((current) =>
@@ -78,45 +79,56 @@ export default function PublisherUploadForm({
       return;
     }
 
-    const pdfUpload = await uploadFile(pdfFile, "sheet-music");
-    const imageUpload = await uploadFile(imageFile, "images");
+    try {
+      setIsSubmitting(true);
+      const pdfUpload = await uploadFile(pdfFile, "sheet-music");
+      const imageUpload = await uploadFile(imageFile, "images");
 
-    let mp3Upload = null;
+      let mp3Upload = null;
 
-    if (mp3File) {
-      mp3Upload = await uploadFile(mp3File, "previews");
+      if (mp3File) {
+        mp3Upload = await uploadFile(mp3File, "previews");
+      }
+
+      const response = await fetch("/api/sheet-music", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          priceCents: Number(priceCents),
+          pdfUrl: pdfUpload.url,
+          imageUrl: imageUpload.url,
+          previewMp3Url: mp3Upload?.url ?? null,
+          previewLink: pdfUpload.previewUrl ?? null,
+          categoryIds: selectedCategoryIds,
+          rightsVerified,
+        }),
+      });
+
+      if (!response.ok) {
+        alert("Sheet music could not be saved.");
+        return;
+      }
+
+      alert("Sheet music uploaded successfully.");
+
+      setTitle("");
+      setPriceCents("");
+      setSelectedCategoryIds([]);
+      setRightsVerified(false);
+      setPdfFile(null);
+      setMp3File(null);
+      setImageFile(null);
+
+
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("An error occurred during upload. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const response = await fetch("/api/sheet-music", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        priceCents: Number(priceCents),
-        pdfUrl: pdfUpload.url,
-        imageUrl: imageUpload.url,
-        previewMp3Url: mp3Upload?.url ?? null,
-        categoryIds: selectedCategoryIds,
-        rightsVerified,
-      }),
-    });
-
-    if (!response.ok) {
-      alert("Sheet music could not be saved.");
-      return;
-    }
-
-    alert("Sheet music uploaded successfully.");
-
-    setTitle("");
-    setPriceCents("");
-    setSelectedCategoryIds([]);
-    setRightsVerified(false);
-    setPdfFile(null);
-    setMp3File(null);
-    setImageFile(null);
   }
 
   return (
@@ -267,9 +279,10 @@ export default function PublisherUploadForm({
 
       <button
         type="submit"
+        disabled={isSubmitting}
         className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-blue-600"
       >
-        Upload Sheet Music
+        {isSubmitting ? "Uploading Files & Generating Preview..." : "Upload Sheet Music"}
       </button>
     </form>
   );
