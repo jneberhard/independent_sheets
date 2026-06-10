@@ -1,6 +1,5 @@
 import { CategoryGroup } from "@prisma/client";
-
-import CategoryCatalogPage from "../../CategoryCatalogPage";
+import CategoryCatalogPage from "@/components/CategoryCatalogPage";
 
 type GenreCatalogPageProps = {
   params: Promise<{
