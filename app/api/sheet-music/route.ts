@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-
 import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma";
 
+// POST handler to create a new sheet music entry, restricted to authenticated users with the PUBLISHER role
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();
@@ -61,6 +61,10 @@ export async function POST(request: Request) {
         imageUrl: body.imageUrl || null,
         previewMp3Url: body.previewMp3Url || null,
         previewLink: body.previewLink || null,
+
+        // FIXED: Captured and saved externalUrl on initialization
+        externalUrl: body.externalUrl || null,
+
         rightsVerified: true,
         artistId: user.id,
         categories: {

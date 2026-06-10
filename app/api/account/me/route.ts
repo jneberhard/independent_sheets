@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth/server";
 import type { User } from "@prisma/client";
 
+// Utility type for Neon Auth session structure
 type AuthSession = {
   data: {
     user: {
@@ -39,11 +40,11 @@ async function ensureUser(session: AuthSession): Promise<User> {
 
   let user: User | null = null;
 
-  // 1. Try by ID
+  // Try by ID
   user = await prisma.user.findUnique({ where: { id: userId } });
   if (user) return user;
 
-  // 2. Try by email
+  // Try by email
   const existingByEmail = await prisma.user.findUnique({
     where: { email },
   });
@@ -55,7 +56,7 @@ async function ensureUser(session: AuthSession): Promise<User> {
     });
   }
 
-  // 3. Create new user with default role
+  // Create new user with default role
   const userRole = await prisma.role.findUnique({
     where: { name: "USER" },
   });
@@ -120,6 +121,7 @@ export async function PUT(req: Request) {
   const user = await ensureUser(session);
   const body = await req.json();
 
+  // Update the local Prisma database
   const updated = await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -150,5 +152,6 @@ export async function PUT(req: Request) {
     },
   });
 
+  // Return the updated user data
   return NextResponse.json(updated);
 }

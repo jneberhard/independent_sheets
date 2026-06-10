@@ -2,6 +2,7 @@ import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { PDFDocument } from "pdf-lib";
 
+// POST handler to upload a file to Vercel Blob Storage, with special handling for sheet music PDFs to automatically generate a 2-page sample preview
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/currentUser";
 
+// PATCH handler to toggle the active status of a user
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

@@ -44,6 +44,7 @@ export async function DELETE(
   }
 }
 
+// PATCH handler to update user details (name, email, role)
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

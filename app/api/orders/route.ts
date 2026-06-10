@@ -56,7 +56,6 @@ export async function GET() {
 }
 
 //POST: Finalize digital authorization checkout transaction pipelines
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -87,6 +86,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Authorization cart collection is empty' }, { status: 400 });
     }
 
+    // Fetch existing user profile data to determine if any updates are needed based on the incoming transaction context
     const existingUser = await prisma.user.findUnique({
       where: { id: targetUserId },
       select: {

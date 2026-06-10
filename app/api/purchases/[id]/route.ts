@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth/server';
 
+// GET handler to retrieve details of a specific purchase order for the authenticated user
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -44,6 +45,7 @@ export async function GET(
       return NextResponse.json({ error: 'Access to digital token prohibited.' }, { status: 403 });
     }
 
+    // Define the expected structure of the purchase with nested sheet music details
     const formattedResponse = {
       purchaseId: purchase.id,
       purchasedAt: purchase.purchasedAt,
