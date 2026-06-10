@@ -3,19 +3,22 @@ import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma";
 import { del } from "@vercel/blob";
 
+// Define the expected structure of route parameters for sheet music operations
 type SheetMusicRouteProps = {
   params: Promise<{
     id: string;
   }>;
 };
 
+// GET handler to retrieve details of a specific sheet music entry by ID, including its associated categories
 export async function GET(
   _request: Request,
-{ params }: SheetMusicRouteProps
+  { params }: SheetMusicRouteProps
 ) {
   try {
     const { id } = await params;
 
+    // Fetch the sheet music record along with its related categories from the database
     const sheetMusic = await prisma.sheetMusic.findUnique({
       where: {
         id,
@@ -40,11 +43,14 @@ export async function GET(
 
   } catch (error) {
     console.error("Error getting sheet music details: " + error);
+    return NextResponse.json(
+      { error: "Failed to fetch details" },
+      { status: 500 }
+    );
   }
 }
 
-//code to update route for editing sheet music
-
+// Code to update route for editing sheet music
 export async function PATCH(
   request: Request,
   { params }: SheetMusicRouteProps
@@ -96,6 +102,7 @@ export async function PATCH(
       );
     }
 
+    // Validate category IDs if provided in the request body
     const categoryIds = Array.isArray(body.categoryIds)
       ? body.categoryIds.filter((categoryId: unknown) => {
           return typeof categoryId === "string" && categoryId.length > 0;
@@ -128,6 +135,14 @@ export async function PATCH(
           description: body.description || null,
           priceCents: Number(body.priceCents),
           imageUrl: body.imageUrl || null,
+
+          // Saved new media link from frontend form input
+          externalUrl: body.externalUrl || null,
+
+          // Enabled updating newly replaced binary file uploads
+          pdfUrl: body.pdfUrl,
+          previewLink: body.previewLink || null,
+          previewMp3Url: body.previewMp3Url || null,
         },
         include: {
           categories: {
@@ -150,6 +165,7 @@ export async function PATCH(
   }
 }
 
+// DELETE handler to remove a specific sheet music entry by ID, restricted to admins and the original publisher, and also deletes associated files from blob storage
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

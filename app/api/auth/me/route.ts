@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/currentUser";
 
+// GET handler to retrieve the current authenticated user's role
 export async function GET() {
   const user = await getCurrentUser();
 

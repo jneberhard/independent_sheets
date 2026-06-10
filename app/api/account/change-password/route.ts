@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/server";
 import { ensureUser } from "@/lib/auth/ensureUser";
 import bcrypt from "bcryptjs";
 
+// POST: Handle password change requests for authenticated users
 export async function POST(req: Request) {
   try {
     const session = await auth.getSession();
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Validate current password against local database (if a password hash already exists)
+    // Validate current password against local database (if a password hash already exists)
     if (dbUser.passwordHash) {
       if (!currentPassword) {
         return NextResponse.json(
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. Synchronize the credential change to Neon Auth first
+    // Synchronize the credential change to Neon Auth first
     // This securely invalidates current tokens and forces an upstream update
     const { error: authError } = await auth.changePassword({
       currentPassword: currentPassword || "", // Fallback empty string if setting a password for the first time
@@ -68,10 +69,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3. Hash the new password for your local Prisma fallback layer
+    // Hash the new password for  local Prisma
     const newHash = await bcrypt.hash(newPassword, 12);
 
-    // 4. Update the local Prisma database
+    // Update the local Prisma database
     await prisma.user.update({
       where: { id: dbUser.id },
       data: { passwordHash: newHash },

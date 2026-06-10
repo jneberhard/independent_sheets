@@ -14,6 +14,7 @@ type SheetMusicForEdit = {
   id: string;
   title: string;
   description: string | null;
+  externalUrl?: string | null; // Added externalUrl field to types
   priceCents: number;
   imageUrl: string | null;
   pdfUrl?: string | null;
@@ -47,6 +48,9 @@ export default function EditSheetMusicForm({
   const [description, setDescription] = useState(
     sheetMusic.description ?? ""
   );
+  const [externalUrl, setExternalUrl] = useState(
+    sheetMusic.externalUrl ?? ""
+  ); // Added local state for external media URL
   const [priceCents, setPriceCents] = useState(
     String(sheetMusic.priceCents)
   );
@@ -120,6 +124,7 @@ export default function EditSheetMusicForm({
         body: JSON.stringify({
           title,
           description,
+          externalUrl: externalUrl || null, // Sent to backend payload
           priceCents: Number(priceCents),
           imageUrl,
           pdfUrl,
@@ -200,6 +205,20 @@ export default function EditSheetMusicForm({
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           rows={4}
+        />
+      </div>
+
+      {/* Added External URL Field Section */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700">
+          External Media Link (YouTube, SoundCloud, etc.)
+        </label>
+        <input
+          type="url"
+          className="mt-2 w-full rounded-md border px-3 py-2"
+          placeholder="https://www.youtube.com/watch?v=..."
+          value={externalUrl}
+          onChange={(event) => setExternalUrl(event.target.value)}
         />
       </div>
 

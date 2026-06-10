@@ -67,6 +67,7 @@ model SheetMusic {
   imageUrl       String?
   previewMp3Url  String?
   previewLink    String?
+  externalUrl    String?
   rightsVerified Boolean @default(false)
 
   artistId String

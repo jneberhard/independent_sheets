@@ -10,6 +10,7 @@ type RouteContext = {
   }>;
 };
 
+// GET handler to allow users to download a sheet music PDF if they are the artist or have purchased it, with support for private blob storage URLs
 export async function GET(_: Request, { params }: RouteContext) {
   try {
     const { id } = await params;

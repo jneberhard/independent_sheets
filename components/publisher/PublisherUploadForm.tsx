@@ -23,6 +23,8 @@ export default function PublisherUploadForm({
 }: PublisherUploadFormProps) {
   const [title, setTitle] = useState("");
   const [priceCents, setPriceCents] = useState("");
+  const [description, setDescription] = useState("");
+  const [externalUrl, setExternalUrl] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [mp3File, setMp3File] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -98,6 +100,8 @@ export default function PublisherUploadForm({
         body: JSON.stringify({
           title,
           priceCents: Number(priceCents),
+          description, // Passed down to backend
+          externalUrl: externalUrl || null, // Passed down as null if left blank
           pdfUrl: pdfUpload.url,
           imageUrl: imageUpload.url,
           previewMp3Url: mp3Upload?.url ?? null,
@@ -114,14 +118,16 @@ export default function PublisherUploadForm({
 
       alert("Sheet music uploaded successfully.");
 
+      // Clear form states
       setTitle("");
       setPriceCents("");
+      setDescription("");
+      setExternalUrl("");
       setSelectedCategoryIds([]);
       setRightsVerified(false);
       setPdfFile(null);
       setMp3File(null);
       setImageFile(null);
-
 
     } catch (error) {
       console.error("Upload error:", error);
@@ -161,6 +167,34 @@ export default function PublisherUploadForm({
           value={priceCents}
           onChange={(event) => setPriceCents(event.target.value)}
           required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700">
+          Description
+        </label>
+
+        <textarea
+          className="mt-2 w-full rounded-md border px-3 py-2"
+          rows={4}
+          placeholder="Enter arrangement details, context, or performance notes..."
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700">
+          External Media Link (Optional)
+        </label>
+
+        <input
+          type="url"
+          className="mt-2 w-full rounded-md border px-3 py-2"
+          placeholder="Example: https://www.youtube.com/watch?v=..."
+          value={externalUrl}
+          onChange={(event) => setExternalUrl(event.target.value)}
         />
       </div>
 
@@ -324,4 +358,3 @@ function CategorySection({
     </div>
   );
 }
-

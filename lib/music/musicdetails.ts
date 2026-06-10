@@ -24,6 +24,7 @@ export const getSheetMusicDetails = cache(async (id: string, userId?: string) =>
             },
           },
         },
+        // If userId exists, check if they purchased it to unlock downloads
         purchases: userId
           ? {
               where: {
@@ -41,8 +42,9 @@ export const getSheetMusicDetails = cache(async (id: string, userId?: string) =>
       return null;
     }
 
+    // A user can download if they are the original publisher/artist OR if they have purchased it
     const canDownload = userId
-      ? sheetMusic.artistId === userId || sheetMusic.purchases.length > 0
+      ? sheetMusic.artistId === userId || (Array.isArray(sheetMusic.purchases) && sheetMusic.purchases.length > 0)
       : false;
 
     return {

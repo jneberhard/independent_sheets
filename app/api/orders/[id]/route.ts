@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/currentUser';
 
+// GET handler to retrieve details of a specific purchase order for the authenticated user
 export async function GET(
   req: Request,
   context: { params: Promise<{ id: string }> }
@@ -39,6 +40,7 @@ export async function GET(
       },
     });
 
+    // Handle case where no order is found for the given ID and user context
     if (!order) {
       console.error(`❌ DB Lookup returned nothing for Order ID: ${orderId} and User ID: ${currentUser.id}`);
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
@@ -54,7 +56,8 @@ export async function GET(
         imageUrl: string | null;
       };
     };
-    // Format the clean relational data into the structure your frontend expects
+
+    // Format the clean relational data into the structure the frontend expects
     const formattedOrderDetails = {
       id: order.id,
       total: order.totalCents / 100,
