@@ -51,6 +51,10 @@ export default async function Header() {
         ? "/dashboard/publisher"
         : "/dashboard";
 
+  const navClass = `absolute left-0 top-full z-50 w-48 origin-top-left rounded-xl border border-[var(--secondary)] bg-white p-2 
+    shadow-xl invisible opacity-0 scale-95 pointer-events-none group-hover:visible group-hover:opacity-100 group-hover:scale-100 
+    group-hover:pointer-events-auto transition-all duration-200 ease-out`
+
   return (
     <header className="border-b border-[var(--secondary)] bg-[var(--primary)] text-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
@@ -190,12 +194,14 @@ export default async function Header() {
               Voicing
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
+            {/* Smooth Dropdown Container */}
+            <div className={navClass}
+            >
               {voicingLinks.map((link) => (
                 <Link
                   key={link.id}
                   href={`/catalog/voicing/${link.slug}`}
-                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800 transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -209,12 +215,14 @@ export default async function Header() {
               Instruments
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
+            {/* Smooth Dropdown Container */}
+            <div className={navClass}
+            >
               {instrumentLinks.map((link) => (
                 <Link
                   key={link.id}
                   href={`/catalog/instrument/${link.slug}`}
-                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800 transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -228,12 +236,14 @@ export default async function Header() {
               Genres
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
+            {/* Smooth Dropdown Container */}
+            <div className={navClass}
+            >
               {genreLinks.map((link) => (
                 <Link
                   key={link.id}
                   href={`/catalog/genre/${link.slug}`}
-                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800 transition-colors"
                 >
                   {link.name}
                 </Link>

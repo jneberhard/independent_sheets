@@ -85,7 +85,7 @@ export default function LoginPage() {
           type="email"
           autoComplete="email"
           inputMode="email"
-          className="mt-2 w-full rounded-md border px-3 py-2"
+          className="mt-2 w-full rounded-md border px-3 py-2 text-black"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required
@@ -101,7 +101,7 @@ export default function LoginPage() {
         <div className="relative mt-2">
           <input
             type={showPassword ? "text" : "password"}
-            className="w-full rounded-md border px-3 py-2 pr-20"
+            className="w-full rounded-md border px-3 py-2 pr-20 text-black"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
