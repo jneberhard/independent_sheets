@@ -8,7 +8,7 @@ interface PurchaseHistoryProps {
 }
 
 export default async function PurchaseHistory({ userId, userName }: PurchaseHistoryProps) {
-  // Fetch grouped Orders 
+  // Fetch grouped Orders
   const orders = await prisma.order.findMany({
     where: {
       buyerId: userId,
@@ -34,7 +34,7 @@ export default async function PurchaseHistory({ userId, userName }: PurchaseHist
       <h3 className="text-2xl font-bold tracking-tight text-gray-900 mb-2">
         Purchase History
       </h3>
-
+      {/* test to see if there are any orders */}
       {orders.length === 0 ? (
         <p className="mt-3 text-gray-500">
           No purchases yet for {userName}. Once you buy sheet music, it will show here.
@@ -49,7 +49,7 @@ export default async function PurchaseHistory({ userId, userName }: PurchaseHist
               {/* Order Metadata Top Row Layout */}
               <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
                 <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Calendar className="h-4 w-4 text-gray-400" />
+                  <Calendar className="h-4 w-4 text-gray-500" />
                   <span>
                     {order.createdAt.toLocaleDateString("en-ZA", {
                       year: "numeric",
@@ -58,13 +58,13 @@ export default async function PurchaseHistory({ userId, userName }: PurchaseHist
                     })}
                   </span>
                   <span className="text-gray-300">•</span>
-                  <span className="font-mono text-xs text-gray-400">
+                  <span className="font-mono text-xs text-gray-500">
                     Order Ref: #{order.id.slice(0, 8).toUpperCase()}
                   </span>
                 </div>
-
+                {/* displays total amount paid */}
                 <div className="text-right">
-                  <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider block">Total Paid</span>
+                  <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider block">Total Paid</span>
                   <span className="text-xl font-extrabold text-[var(--navy,#111827)]">
                     ${(order.totalCents / 100).toFixed(2)}
                   </span>
