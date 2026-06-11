@@ -51,6 +51,10 @@ export default async function Header() {
         ? "/dashboard/publisher"
         : "/dashboard";
 
+  const navClass = `absolute left-0 top-full z-50 w-48 origin-top-left rounded-xl border border-[var(--secondary)] bg-white p-2 
+    shadow-xl invisible opacity-0 scale-95 pointer-events-none group-hover:visible group-hover:opacity-100 group-hover:scale-100 
+    group-hover:pointer-events-auto transition-all duration-200 ease-out`
+
   return (
     <header className="border-b border-[var(--secondary)] bg-[var(--primary)] text-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
@@ -74,7 +78,7 @@ export default async function Header() {
               />
             </div>
 
-            <span className="hidden text-3xl font-bold tracking-tight text-white sm:inline">
+            <span className="hidden text-3xl font-bold tracking-tight text-black sm:inline">
               Independent Sheets
             </span>
           </Link>
@@ -90,7 +94,7 @@ export default async function Header() {
               <>
                 <Link
                   href="/login"
-                  className="rounded-md border border-white px-4 py-2 text-sm font-medium text-white transition hover:bg-white hover:text-[var(--primary)]"
+                  className="rounded-md border bg-[var(--card)] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
                 >
                   Login
                 </Link>
@@ -104,14 +108,14 @@ export default async function Header() {
               </>
             ) : (
               <div className="flex flex-col items-end gap-2">
-                <span className="text-sm font-medium text-[var(--accent)]">
+                <span className="text-sm font-medium text-black">
                   Logged in as {user.name ?? user.email}
                 </span>
 
                 <div className="flex items-center gap-3">
                   <Link
                     href={dashboardLink}
-                    className="text-sm font-medium text-[var(--background)] hover:text-[var(--accent)] hover:underline"
+                    className="rounded-md border bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
                   >
                     Dashboard
                   </Link>
@@ -147,7 +151,7 @@ export default async function Header() {
                   <div className="flex items-center gap-2">
                     <Link
                       href={dashboardLink}
-                      className="text-[10px] font-medium text-[var(--background)] hover:text-[var(--accent)] hover:underline"
+                      className="rounded-md border bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white"
                     >
                       Dashboard
                     </Link>
@@ -190,12 +194,14 @@ export default async function Header() {
               Voicing
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
+            {/* Smooth Dropdown Container */}
+            <div className={navClass}
+            >
               {voicingLinks.map((link) => (
                 <Link
                   key={link.id}
                   href={`/catalog/voicing/${link.slug}`}
-                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800 transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -209,12 +215,14 @@ export default async function Header() {
               Instruments
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
+            {/* Smooth Dropdown Container */}
+            <div className={navClass}
+            >
               {instrumentLinks.map((link) => (
                 <Link
                   key={link.id}
                   href={`/catalog/instrument/${link.slug}`}
-                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800 transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -228,12 +236,14 @@ export default async function Header() {
               Genres
             </button>
 
-            <div className="absolute left-0 top-full z-50 hidden w-48 rounded-xl border border-[var(--secondary)] bg-white p-2 shadow-xl group-hover:block">
+            {/* Smooth Dropdown Container */}
+            <div className={navClass}
+            >
               {genreLinks.map((link) => (
                 <Link
                   key={link.id}
                   href={`/catalog/genre/${link.slug}`}
-                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800"
+                  className="block rounded px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 hover:text-blue-800 transition-colors"
                 >
                   {link.name}
                 </Link>
