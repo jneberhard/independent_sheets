@@ -28,6 +28,7 @@ export default function LoginForm() {
     setEmailError("");
     setPasswordError("");
 
+    // We validate early so the user gets a clear message before we call auth.
     if (!isValidEmail(email)) {
       setEmailError("Please enter a valid email address.");
       return;
@@ -41,6 +42,8 @@ export default function LoginForm() {
     }
 
     try {
+      // Sign in through Neon Auth first, then use our local role lookup to send
+      // the user to the right dashboard.
       await authClient.signIn.email({
         email,
         password,
@@ -59,6 +62,7 @@ export default function LoginForm() {
       } else if (data.role === "ADMIN") {
         router.push("/dashboard/admin");
       } else {
+        // Normal users land on the customer dashboard.
         router.push("/dashboard");
       }
 

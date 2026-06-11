@@ -15,7 +15,8 @@ export default async function PublisherMusicPage() {
     redirect("/dashboard");
   }
 
-  // UPDATED: Include categories relation mapping via Prisma query
+  // Admins can see the full list for support/testing, while publishers only see
+  // the music they personally uploaded.
   const sheetMusic = await prisma.sheetMusic.findMany({
     where:
       user.role.name === "ADMIN"
@@ -85,7 +86,7 @@ export default async function PublisherMusicPage() {
                   )}
 
                   <div className="p-4">
-                    {/* NEW: Responsive Category Tags Block */}
+                    {/* Tags stay visible here so the publisher can confirm the item is classified correctly. */}
                     <div className="mb-2 flex flex-wrap gap-1">
                       {music.categories?.map((cat) => (
                         <span
@@ -113,7 +114,7 @@ export default async function PublisherMusicPage() {
                   </div>
                 </div>
 
-                {/* Sticky bottom card actions layout layout block */}
+                {/* Actions stay anchored at the bottom so view and edit are easy to find. */}
                 <div className="border-t border-gray-100 px-4 py-3 bg-gray-50/50 flex gap-4">
                   <Link
                     href={`/music/${music.id}`}

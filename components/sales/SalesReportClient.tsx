@@ -54,8 +54,8 @@ export function SalesReportClient({ songs }: { songs: Song[] }) {
   const selectedCount = useMemo(() => selectedSongs.length, [selectedSongs]);
 
   useEffect(() => {
+    // Load the full report once so the page is useful before any filters are touched.
     void fetchSalesData();
-    // First load gives a quick picture of the whole catalog without any extra clicks.
   }, []);
 
   async function fetchSalesData() {
@@ -65,6 +65,7 @@ export function SalesReportClient({ songs }: { songs: Song[] }) {
     try {
       const params = new URLSearchParams();
 
+      // These filters keep the report flexible without making the UI feel heavy.
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
       selectedSongs.forEach((songId) => params.append("songIds", songId));
@@ -85,6 +86,7 @@ export function SalesReportClient({ songs }: { songs: Song[] }) {
   }
 
   function toggleSong(songId: string) {
+    // The report can focus on one song or compare several at once.
     setSelectedSongs((current) =>
       current.includes(songId) ? current.filter((id) => id !== songId) : [...current, songId]
     );
