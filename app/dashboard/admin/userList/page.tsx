@@ -6,19 +6,18 @@ import UserTable from "@/components/admin/UserTable";
 export const dynamic = "force-dynamic";
 
 export default async function AdminUserListPage() {
-  //Authenticate and authorize session role
+  // Authenticate and authorize the current session before showing user data.
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
     redirect("/login");
   }
 
-  // Double check authorization against your admin role convention
   if (currentUser.roleId !== "role_admin" && currentUser.role?.name !== "ADMIN") {
     redirect("/dashboard");
   }
 
-  // Fetch all users along with their role
+  // Fetch the user list with role details so the admin can review and edit it.
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -42,14 +41,14 @@ export default async function AdminUserListPage() {
     <main className="min-h-screen bg-gray-50 p-6 sm:p-10">
       <div className="mx-auto max-w-7xl">
 
-        {/* Header Block */}
         <div className="sm:flex sm:items-center sm:justify-between border-b pb-6 mb-8">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
               User Management
             </h1>
             <p className="mt-2 text-sm text-gray-600">
-              A comprehensive directory of all registered accounts. Review data, adjust permissions, toggle activation states, or remove entries.
+              A directory of registered accounts. Review data, adjust
+              permissions, and jump into editing when needed.
             </p>
           </div>
           <div className="mt-4 sm:mt-0">
@@ -59,7 +58,6 @@ export default async function AdminUserListPage() {
           </div>
         </div>
 
-        {/* Table Container */}
         <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
           <UserTable initialUsers={users} />
         </div>

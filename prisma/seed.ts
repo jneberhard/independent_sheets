@@ -21,6 +21,7 @@ function slugify(value: string) {
 }
 
 async function main() {
+  // Seed the roles first because the rest of the demo data depends on them.
   await prisma.role.upsert({
     where: {
       name: RoleName.USER,
@@ -70,6 +71,8 @@ async function main() {
   ];
 
   for (const category of voicings) {
+    // Voicing categories help the catalog page group choir music in a way
+    // that matches how singers actually search for pieces.
     await prisma.category.upsert({
       where: {
         group_slug: {
@@ -103,6 +106,7 @@ async function main() {
   ];
 
   for (const category of instruments) {
+    // Instrument categories let us support accompaniment and ensemble-specific browsing.
     await prisma.category.upsert({
       where: {
         group_slug: {
@@ -131,6 +135,7 @@ async function main() {
   ];
 
   for (const category of genres) {
+    // Genre categories are useful for broad navigation and for quick demo filtering.
     await prisma.category.upsert({
       where: {
         group_slug: {
@@ -202,9 +207,9 @@ async function main() {
       title: "Amazing Grace (SATB)",
       description: "Demo sheet music for detail page testing.",
       priceCents: 499,
-      pdfUrl: "https://example.com/demo/amazing-grace-satb.pdf",
-      imageUrl: "https://example.com/demo/amazing-grace-satb.jpg",
-      previewMp3Url: "https://example.com/demo/amazing-grace-satb.mp3",
+      pdfUrl: "/songwriter.pdf",
+      imageUrl: "/songwriter.png",
+      previewMp3Url: null,
       previewLink: "https://www.youtube.com/watch?v=CDdvReNKKuk",
       categorySlugs: ["satb", "piano", "sacred"],
     },
@@ -212,8 +217,8 @@ async function main() {
       title: "How Great Thou Art (SAB)",
       description: "Demo SAB arrangement with organ accompaniment.",
       priceCents: 599,
-      pdfUrl: "https://example.com/demo/how-great-thou-art-sab.pdf",
-      imageUrl: "https://example.com/demo/how-great-thou-art-sab.jpg",
+      pdfUrl: "/songwriter.pdf",
+      imageUrl: "/hero.png",
       previewMp3Url: null,
       previewLink: "https://open.spotify.com/",
       categorySlugs: ["sab", "organ", "sacred"],
@@ -222,15 +227,16 @@ async function main() {
       title: "Ave Verum Corpus (SATB)",
       description: "Demo classical choir listing for navigation checks.",
       priceCents: 699,
-      pdfUrl: "https://example.com/demo/ave-verum-corpus-satb.pdf",
-      imageUrl: "https://example.com/demo/ave-verum-corpus-satb.jpg",
-      previewMp3Url: "https://example.com/demo/ave-verum-corpus-satb.mp3",
+      pdfUrl: "/songwriter.pdf",
+      imageUrl: "/logo_1.png",
+      previewMp3Url: null,
       previewLink: null,
       categorySlugs: ["satb", "piano", "classical"],
     },
   ];
 
   for (const song of demoSongs) {
+    // These demo songs give Benjamin real-looking records for detail-page and catalog testing.
     const existingSong = await prisma.sheetMusic.findFirst({
       where: {
         artistId: demoPublisher.id,
@@ -299,6 +305,7 @@ async function main() {
     });
 
     if (!existingPurchase) {
+      // The sample purchase proves the royalty split and download flow both have real data to read.
       const artistAmount = Math.round(demoPurchaseSheetMusic.priceCents * 0.75);
       const platformAmount = demoPurchaseSheetMusic.priceCents - artistAmount;
 

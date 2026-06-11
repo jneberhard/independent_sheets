@@ -23,6 +23,8 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
+    // We keep the category list strict so every upload has something useful for
+    // the catalog pages to filter by.
     const categoryIds = Array.isArray(body.categoryIds)
       ? body.categoryIds.filter((categoryId: unknown) => {
           return typeof categoryId === "string" && categoryId.length > 0;
@@ -43,6 +45,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Price is stored in cents to avoid currency rounding issues later.
     const priceCents = Number(body.priceCents);
 
     if (!Number.isInteger(priceCents) || priceCents <= 0) {

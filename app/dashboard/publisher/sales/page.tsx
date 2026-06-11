@@ -1,25 +1,32 @@
-export default function ComingSoonPage() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12">
-      <div className="w-full max-w-2xl rounded-2xl border bg-white p-10 text-center shadow-sm">
-        <h1 className="text-5xl font-bold tracking-tight text-gray-900">
-          Coming Soon
-        </h1>
+import { redirect } from "next/navigation";
 
-        <p className="mt-6 text-lg text-gray-600">
-          This section of Independent Sheets is currently under development.
-        </p>
+import { SalesReportClient } from "@/components/sales/SalesReportClient";
+import { getCurrentUser } from "@/lib/currentUser";
+import { prisma } from "@/lib/prisma";
 
-        <p className="mt-3 text-sm text-gray-500">
-          Check back soon for new features and updates.
-        </p>
+export default async function SalesPage() {
+  const user = await getCurrentUser();
 
-        <div className="mt-8">
-          <div className="mx-auto h-2 w-40 overflow-hidden rounded-full bg-gray-200">
-            <div className="h-full w-1/2 animate-pulse rounded-full bg-blue-600" />
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (user.role.name !== "PUBLISHER" && user.role.name !== "ADMIN") {
+    redirect("/dashboard");
+  }
+
+  // We only need simple song metadata here because the client pulls the actual
+  // sales totals from the sales API.
+  const songs = await prisma.sheetMusic.findMany({
+    where: user.role.name === "ADMIN" ? {} : { artistId: user.id },
+    select: {
+      id: true,
+      title: true,
+    },
+    orderBy: {
+      title: "asc",
+    },
+  });
+
+  return <SalesReportClient songs={songs} />;
 }

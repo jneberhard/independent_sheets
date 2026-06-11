@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import CustomerNav from "@/components/authdashboard/CustomerNav";
 import { getCurrentUser } from "@/lib/currentUser";
 
-export default async function PublisherDashboardPage() {
+export default async function AdminDashboardPage() {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -28,11 +28,9 @@ export default async function PublisherDashboardPage() {
           </h1>
 
           <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--background)]">
-            Manage your complete sheet music catalog from one place.
-            Upload new arrangements, organize music by voicing and
-            instrumentation, update listings, and monitor sales and
-            royalty activity. As an admin, you also have access to user management and
-            platform analytics to oversee overall performance and user engagement.
+            Manage the platform from one place. Review uploads, organize
+            catalog items, monitor sales and royalty activity, and keep user
+            management close at hand.
           </p>
         </section>
 
@@ -50,8 +48,8 @@ export default async function PublisherDashboardPage() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-gray-700">
-              Add a new PDF score, preview MP3, artwork image,
-              title, description, and pricing information.
+              Add a new PDF score, preview MP3, artwork image, title,
+              description, and pricing information.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-[var(--primary)] group-hover:underline">
@@ -67,9 +65,7 @@ export default async function PublisherDashboardPage() {
               Manage
             </div>
 
-            <h2 className="mt-5 text-2xl font-bold">
-              My Sheet Music
-            </h2>
+            <h2 className="mt-5 text-2xl font-bold">My Sheet Music</h2>
 
             <p className="mt-4 text-sm leading-7 text-white">
               Edit uploaded music, update pricing, and manage metadata.
@@ -109,9 +105,7 @@ export default async function PublisherDashboardPage() {
               Purchases
             </div>
 
-            <h2 className="mt-5 text-2xl font-bold">
-              Purchased Sheet Music
-            </h2>
+            <h2 className="mt-5 text-2xl font-bold">Purchased Sheet Music</h2>
 
             <CustomerNav userId={user.id} />
           </Link>
@@ -150,7 +144,7 @@ export default async function PublisherDashboardPage() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-gray-700">
-              View users listed on the platform. Edit, update, and manage users.
+              View users on the platform, then edit, update, or manage them.
             </p>
 
             <div className="mt-6 text-sm font-semibold text-[var(--primary)] group-hover:underline">

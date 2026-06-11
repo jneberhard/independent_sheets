@@ -5,6 +5,8 @@ import { CartProvider } from './context/CartContext';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Independent Sheets",
   description: "Sheet music by creators for artists",

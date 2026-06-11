@@ -20,6 +20,8 @@ export async function GET(_: Request, { params }: RouteContext) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // We load the current user's purchase history here so the download check
+    // can stay simple: owner or buyer gets access, everyone else gets blocked.
     const sheetMusic = await prisma.sheetMusic.findUnique({
       where: { id },
       include: {
