@@ -75,6 +75,7 @@ export default async function PublisherMusicPage() {
                       alt={music.title}
                       width={500}
                       height={350}
+                      unoptimized
                       className="h-48 w-full object-cover"
                     />
                   ) : (

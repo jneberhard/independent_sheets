@@ -72,6 +72,7 @@ export default async function FullCatalogPage() {
                         alt={`Cover art for ${song.title}`}
                         width={400}
                         height={533}
+                        unoptimized
                         className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />
