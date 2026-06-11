@@ -101,7 +101,10 @@ export default async function PublisherDashboardPage() {
             </div>
           </Link>
 
-          <div className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+          <Link
+            href={`/dashboard/purchases/${user.id}`}
+            className="group rounded-3xl border border-[var(--accent)] bg-[var(--accent)] p-7 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl block"
+          >
             <div className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-semibold text-[var(--primary)]">
               Purchases
             </div>
@@ -110,12 +113,8 @@ export default async function PublisherDashboardPage() {
               Purchased Sheet Music
             </h2>
 
-            <p className="mt-4 text-sm leading-7 text-white">
-              See your purchase history.
-            </p>
-
             <CustomerNav userId={user.id} />
-          </div>
+          </Link>
 
           <Link
             href="/account"
