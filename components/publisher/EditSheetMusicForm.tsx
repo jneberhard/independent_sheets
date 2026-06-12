@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useId } from "react";
 
 type CategoryForEdit = {
   id: string;
@@ -14,7 +14,7 @@ type SheetMusicForEdit = {
   id: string;
   title: string;
   description: string | null;
-  externalUrl?: string | null; // Added externalUrl field to types
+  externalUrl?: string | null;
   priceCents: number;
   imageUrl: string | null;
   pdfUrl?: string | null;
@@ -35,7 +35,6 @@ type EditSheetMusicFormProps = {
   categories: CategoryForEdit[];
 };
 
-//sets up to Edit Sheet Music
 export default function EditSheetMusicForm({
   sheetMusic,
   voicings,
@@ -44,16 +43,18 @@ export default function EditSheetMusicForm({
 }: EditSheetMusicFormProps) {
   const router = useRouter();
 
+  const titleFieldId = useId();
+  const descriptionFieldId = useId();
+  const externalUrlFieldId = useId();
+  const priceFieldId = useId();
+  const pdfFieldId = useId();
+  const mp3FieldId = useId();
+  const imageFieldId = useId();
+
   const [title, setTitle] = useState(sheetMusic.title);
-  const [description, setDescription] = useState(
-    sheetMusic.description ?? ""
-  );
-  const [externalUrl, setExternalUrl] = useState(
-    sheetMusic.externalUrl ?? ""
-  ); // Added local state for external media URL
-  const [priceCents, setPriceCents] = useState(
-    String(sheetMusic.priceCents)
-  );
+  const [description, setDescription] = useState(sheetMusic.description ?? "");
+  const [externalUrl, setExternalUrl] = useState(sheetMusic.externalUrl ?? "");
+  const [priceCents, setPriceCents] = useState(String(sheetMusic.priceCents));
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [mp3File, setMp3File] = useState<File | null>(null);
@@ -68,7 +69,6 @@ export default function EditSheetMusicForm({
       if (currentIds.includes(categoryId)) {
         return currentIds.filter((id) => id !== categoryId);
       }
-
       return [...currentIds, categoryId];
     });
   }
@@ -124,7 +124,7 @@ export default function EditSheetMusicForm({
         body: JSON.stringify({
           title,
           description,
-          externalUrl: externalUrl || null, // Sent to backend payload
+          externalUrl: externalUrl || null,
           priceCents: Number(priceCents),
           imageUrl,
           pdfUrl,
@@ -148,167 +148,194 @@ export default function EditSheetMusicForm({
     }
   }
 
-  function renderCategoryCheckboxes(
-    label: string,
-    options: CategoryForEdit[]
-  ) {
+  function renderCategoryCheckboxes(label: string, options: CategoryForEdit[]) {
     return (
-      <section className="rounded-xl border bg-gray-50 p-4">
-        <h2 className="text-base font-bold text-gray-900">{label}</h2>
+      <fieldset className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+        <legend className="text-base font-bold text-gray-900 px-1">{label}</legend>
 
         {options.length === 0 ? (
-          <p className="mt-3 text-sm text-gray-500">
+          <p className="mt-3 text-sm text-gray-700">
             No options have been added yet.
           </p>
         ) : (
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {options.map((option) => (
-              <label
-                key={option.id}
-                className="flex cursor-pointer items-center gap-3 rounded-lg border bg-white px-3 py-2 text-sm text-gray-700"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedCategoryIds.includes(option.id)}
-                  onChange={() => toggleCategory(option.id)}
-                  className="h-4 w-4"
-                />
-                <span>{option.name}</span>
-              </label>
-            ))}
+            {options.map((option) => {
+              const checkboxId = `cat-${option.id}`;
+              return (
+                <label
+                  key={option.id}
+                  htmlFor={checkboxId}
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 font-medium shadow-sm hover:bg-gray-50"
+                >
+                  <input
+                    id={checkboxId}
+                    type="checkbox"
+                    checked={selectedCategoryIds.includes(option.id)}
+                    onChange={() => toggleCategory(option.id)}
+                    className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                  />
+                  <span>{option.name}</span>
+                </label>
+              );
+            })}
           </div>
         )}
-      </section>
+      </fieldset>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+    <form onSubmit={handleSubmit} className="mt-8 space-y-6 text-gray-900">
+
+      {/* Title Field */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label htmlFor={titleFieldId} className="block text-sm font-semibold text-gray-900">
           Title
         </label>
         <input
-          className="mt-2 w-full rounded-md border px-3 py-2"
+          id={titleFieldId}
+          type="text"
+          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           required
         />
       </div>
 
+      {/* Description Field */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label htmlFor={descriptionFieldId} className="block text-sm font-semibold text-gray-900">
           Description
         </label>
         <textarea
-          className="mt-2 w-full rounded-md border px-3 py-2"
+          id={descriptionFieldId}
+          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           rows={4}
         />
       </div>
 
-      {/* Added External URL Field Section */}
+      {/* External URL Field */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label htmlFor={externalUrlFieldId} className="block text-sm font-semibold text-gray-900">
           External Media Link (YouTube, SoundCloud, etc.)
         </label>
         <input
+          id={externalUrlFieldId}
           type="url"
-          className="mt-2 w-full rounded-md border px-3 py-2"
+          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
           placeholder="https://www.youtube.com/watch?v=..."
           value={externalUrl}
           onChange={(event) => setExternalUrl(event.target.value)}
         />
       </div>
 
+      {/* Price Field */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label htmlFor={priceFieldId} className="block text-sm font-semibold text-gray-900">
           Price in cents
         </label>
         <input
-          className="mt-2 w-full rounded-md border px-3 py-2"
+          id={priceFieldId}
+          type="number"
+          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
           value={priceCents}
           onChange={(event) => setPriceCents(event.target.value)}
           required
         />
       </div>
 
+      {/* Dynamic Category Blocks */}
       {renderCategoryCheckboxes("Voicing", voicings)}
       {renderCategoryCheckboxes("Instrumentation", instrumentations)}
       {renderCategoryCheckboxes("Categories", categories)}
 
-      <div className="space-y-4 border-t pt-4">
+      {/* Media Updates Cluster */}
+      <div className="space-y-4 border-t border-gray-200 pt-4">
         <h3 className="text-sm font-bold text-gray-900">Media Files Updates</h3>
 
-        {/* Sheet Music PDF Upload Entry */}
+        {/* PDF File Entry */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700">
+          <label htmlFor={pdfFieldId} className="block text-sm font-semibold text-gray-900">
             Replace Full Score PDF (Triggers Sample Auto-Generation)
           </label>
           <div className="mt-2 flex items-center gap-4">
-            <label className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600">
+            <input
+              id={pdfFieldId}
+              type="file"
+              accept="application/pdf"
+              className="sr-only"
+              onChange={(event) => setPdfFile(event.target.files?.[0] ?? null)}
+            />
+            <label
+              htmlFor={pdfFieldId}
+              className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2"
+            >
               Choose PDF
-              <input
-                type="file"
-                accept="application/pdf"
-                className="hidden"
-                onChange={(event) => setPdfFile(event.target.files?.[0] ?? null)}
-              />
             </label>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-700" aria-live="polite">
               {pdfFile ? pdfFile.name : "No new score selected"}
             </span>
           </div>
         </div>
 
-        {/* Audio MP3 Upload Entry */}
+        {/* Audio MP3 Entry */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700">
+          <label htmlFor={mp3FieldId} className="block text-sm font-semibold text-gray-900">
             Upload / Replace Preview MP3
           </label>
           <div className="mt-2 flex items-center gap-4">
-            <label className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600">
+            <input
+              id={mp3FieldId}
+              type="file"
+              accept="audio/mpeg,audio/mp3"
+              className="sr-only"
+              onChange={(event) => setMp3File(event.target.files?.[0] ?? null)}
+            />
+            <label
+              htmlFor={mp3FieldId}
+              className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2"
+            >
               Choose MP3
-              <input
-                type="file"
-                accept="audio/mpeg,audio/mp3"
-                className="hidden"
-                onChange={(event) => setMp3File(event.target.files?.[0] ?? null)}
-              />
             </label>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-700" aria-live="polite">
               {mp3File ? mp3File.name : "No new audio selected"}
             </span>
           </div>
         </div>
 
-        {/* Image Artwork Interface */}
+        {/* Artwork Image Entry */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700">
+          <label htmlFor={imageFieldId} className="block text-sm font-semibold text-gray-900">
             Replace Image Artwork
           </label>
           <div className="mt-2 flex items-center gap-4">
-            <label className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600">
+            <input
+              id={imageFieldId}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="sr-only"
+              onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
+            />
+            <label
+              htmlFor={imageFieldId}
+              className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2"
+            >
               Choose Image
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                className="hidden"
-                onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
-              />
             </label>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-700" aria-live="polite">
               {imageFile ? imageFile.name : "No new image selected"}
             </span>
           </div>
         </div>
       </div>
 
+      {/* Action Form Footer Submit Button */}
       <button
         type="submit"
         disabled={isSaving}
-        className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+        className="w-full rounded-md bg-black px-4 py-3 font-medium text-white transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400"
       >
         {isSaving ? "Uploading Files & Saving Changes..." : "Save Changes"}
       </button>
