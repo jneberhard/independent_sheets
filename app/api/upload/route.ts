@@ -40,37 +40,59 @@ export async function POST(request: Request) {
     // can see the opening pages without exposing the whole file.
     if (folder === "sheet-music" && file.type === "application/pdf") {
       const arrayBuffer = await file.arrayBuffer();
-      const originalDoc = await PDFDocument.load(arrayBuffer);
-      const sampleDoc = await PDFDocument.create();
+      
+      try {
+        const originalDoc = await PDFDocument.load(arrayBuffer);
+        const sampleDoc = await PDFDocument.create();
 
-      const pageCount = originalDoc.getPageCount();
-      const pagesToExtract = Math.min(pageCount, 2);
-      const copiedPages = await sampleDoc.copyPages(
-        originalDoc,
-        Array.from({ length: pagesToExtract }, (_, index) => index)
-      );
+        const pageCount = originalDoc.getPageCount();
+        const pagesToExtract = Math.min(pageCount, 2);
+        const copiedPages = await sampleDoc.copyPages(
+          originalDoc,
+          Array.from({ length: pagesToExtract }, (_, index) => index)
+        );
 
-      copiedPages.forEach((page) => sampleDoc.addPage(page));
+        copiedPages.forEach((page) => sampleDoc.addPage(page));
 
-      const samplePdfBytes = await sampleDoc.save();
-      const samplePathname = `sheet-music/previews/sample-${filename}`;
-      const sampleBuffer = Buffer.from(samplePdfBytes);
+        const samplePdfBytes = await sampleDoc.save();
+        const samplePathname = `sheet-music/previews/sample-${filename}`;
+        const sampleBuffer = Buffer.from(samplePdfBytes);
 
-      const [mainBlob, sampleBlob] = await Promise.all([
-        put(pathname, file, { access, token }),
-        put(samplePathname, sampleBuffer, {
-          access,
-          token,
-          contentType: "application/pdf",
-        }),
-      ]);
+        const [mainBlob, sampleBlob] = await Promise.all([
+          put(pathname, file, { access, token }),
+          put(samplePathname, sampleBuffer, {
+            access,
+            token,
+            contentType: "application/pdf",
+          }),
+        ]);
 
-      return NextResponse.json({
-        success: true,
-        url: mainBlob.url,
-        pathname: mainBlob.pathname,
-        previewUrl: sampleBlob.url,
-      });
+        return NextResponse.json({
+          success: true,
+          url: mainBlob.url,
+          pathname: mainBlob.pathname,
+          previewUrl: sampleBlob.url,
+        });
+
+      } catch (pdfError: any) {
+        console.error("PDF processing failed:", pdfError);
+
+        // Check if the error is specifically due to encryption/restrictions
+        if (pdfError?.message?.includes("encrypted")) {
+          return NextResponse.json(
+            { 
+              error: "This PDF is encrypted or has copy/print restrictions enabled. Please remove these restrictions so a 2-page sample preview can be generated."
+            },
+            { status: 400 }
+          );
+        }
+
+        // Generic fallback if PDF reading fails for another reason (e.g., file corruption)
+        return NextResponse.json(
+          { error: "Could not read the PDF file. The file may be corrupted." },
+          { status: 400 }
+        );
+      }
     }
 
     const blob = await put(pathname, file, {

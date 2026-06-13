@@ -1,3 +1,4 @@
+// Testimonials on home screen
 export default function TestimonialsSection() {
     const testimonials = [
     {

@@ -17,6 +17,8 @@ type ReviewsSectionProps = {
 };
 
 export default function ReviewsSection({ sheetMusicId, reviews, currentUser }: ReviewsSectionProps) {
+  // Checks to see if user's already left a review. This is to only allow
+  // one review per user.
   const hasUserReviewed = reviews?.some(
     (review) => review.userId === currentUser?.id
   );
@@ -39,6 +41,7 @@ export default function ReviewsSection({ sheetMusicId, reviews, currentUser }: R
 
               return (
                 <div key={review.id} className="rounded-xl border bg-white p-5 shadow-sm space-y-2">
+                  {/* If user's left a review or if they're an admin, put a delete button to delete the review */}
                   {currentUser?.roleId == "role_admin" || currentUser?.id == review.userId ?  (
                     <div><DeleteReviewButton reviewId={review.id} /></div>
                   ) : null}
@@ -66,6 +69,7 @@ export default function ReviewsSection({ sheetMusicId, reviews, currentUser }: R
       </div>
 
       <div className="space-y-4">
+        {/* Checks to see if they're signed in */}
         {!currentUser ? (
           <div className="rounded-xl border bg-gray-50 p-6 text-center">
             <p className="text-sm text-gray-600">
@@ -73,12 +77,15 @@ export default function ReviewsSection({ sheetMusicId, reviews, currentUser }: R
             </p>
           </div>
         ) : hasUserReviewed ? (
+          // If user's left a review, leave a message telling them thanks and don't let them
+          // submit another one
           <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center">
             <p className="text-sm font-medium text-green-900">
               Thank for leaving a review!
             </p>
           </div>
         ) : (
+          // Reviews component
           <ReviewForm sheetMusicId={sheetMusicId} />
         )}
       </div>

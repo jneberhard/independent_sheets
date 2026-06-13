@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
+// Cards on home screen. Gets random 3 songs from db and creates cards for them on home screen
 export default async function FeaturedHome() {
+  // Get 3 random songs from db
     const featuredSongs = await prisma.$queryRaw`
         SELECT * FROM "SheetMusic" 
         ORDER BY RANDOM() 

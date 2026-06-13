@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+// Cards on home screen. Split here for segmentation of code
 export default function CatalogSection() {
     const categories = [
     {

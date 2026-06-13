@@ -18,6 +18,7 @@ export default function DeleteSongButton({ songId, onDeleted }: DeleteSongButton
 
     setIsDeleting(true);
 
+    // Attempts to delete song
     try {
       const response = await fetch(`/api/sheet-music/${songId}`, {
         method: "DELETE",
@@ -34,6 +35,7 @@ export default function DeleteSongButton({ songId, onDeleted }: DeleteSongButton
 
       router.refresh();
       
+      // If successful, push user to the dashboard
       router.push("/dashboard");
 
     } catch (error) {

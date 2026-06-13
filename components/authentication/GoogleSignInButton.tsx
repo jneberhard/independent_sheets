@@ -9,6 +9,7 @@ export default function GoogleSignInButton() {
   const handleLogin = async () => {
     try {
       setIsLoading(true);
+      // Attempts to contact google for oauth, signs user in if account is valid or creates account for them
       await authClient.signIn.social({
         provider: 'google',
         callbackURL: '/dashboard',
@@ -22,11 +23,11 @@ export default function GoogleSignInButton() {
 
   return (
     <button
-            type="button"
-            onClick={handleLogin}
-            className="mt-4 w-full rounded-md border px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-100"
-          >
-            Continue with Google
-          </button>
+      type="button"
+      onClick={handleLogin}
+      className="mt-4 w-full rounded-md border px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-100"
+    >
+      Continue with Google
+    </button>
   );
 }

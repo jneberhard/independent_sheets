@@ -19,13 +19,19 @@ export default function ReviewForm({ sheetMusicId }: ReviewFormProps) {
     e.preventDefault();
     setError(null);
 
+    // Checks to make sure star rating was filled in
     if (rating === 0) {
       setError("Please select a star rating.");
+      return;
+    }
+    else if (reviewText === null) {
+      setError("Please type your review.");
       return;
     }
 
     setIsSubmitting(true);
 
+    // Attempt to submit the review
     try {
       const res = await fetch(`/api/reviews`, {
         method: "POST",
@@ -60,12 +66,14 @@ export default function ReviewForm({ sheetMusicId }: ReviewFormProps) {
     <form onSubmit={handleSubmit} className="rounded-xl border bg-white p-6 shadow-sm space-y-4">
       <h3 className="text-lg font-bold text-gray-900">Leave a Review</h3>
       
+      {/* Error message component */}
       {error && (
         <p className="text-sm font-medium text-red-600 bg-red-50 p-2.5 rounded-lg">
           {error}
         </p>
       )}
 
+      {/* Actual review form component */}
       <div className="flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <button

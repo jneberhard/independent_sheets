@@ -93,7 +93,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
               {sheetMusic.categories.map((cat) => (
                 <span
                   key={cat.categoryId}
-                  className="inline-flex items-center rounded-md bg-[var(--background)] px-2.5 py-1 text-xs font-semibold text-[var(--primary)] border border-[var(--secondary)] transition hover:-translate-y-0.5"
+                  className="inline-flex items-center rounded-md bg-[var(--background)] px-2.5 py-1 text-xs font-semibold text-white transition hover:-translate-y-0.5"
                 >
                   {cat.category.name}
                 </span>
@@ -166,7 +166,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
             </div>
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed p-6 text-center text-sm text-gray-400">
+          <div className="rounded-xl border border-dashed p-6 text-center text-sm text-gray-600">
             No partial look-ahead score copy is generated for this entry.
           </div>
         )}

@@ -12,6 +12,7 @@ type MusicDetailPageProps = {
 
 export default async function MusicDetailPage({ params }: MusicDetailPageProps) {
   const { id } = await params;
+  // Done to check for admin permissions
   const user = await getCurrentUser();
 
   return (
@@ -28,6 +29,7 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
           </Link>
         </div>
 
+        {/* If user is an admin, give them permissions to delete the song on the detail page */}
         {user?.roleId == "role_admin" ? (<DeleteSongButton songId={id} />) : null}
 
         <SheetMusicDetails id={id} />

@@ -55,11 +55,11 @@ export default async function CategoryCatalogPage({
     <main className="min-h-screen bg-[var(--background)] px-6 py-12">
       <div className="mx-auto max-w-7xl">
         {/* Banner Section matching the layout look of catalog page */}
-        <section className="mb-12 rounded-3xl bg-[var(--primary)] p-10 text-white shadow-xl">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[var(--accent)]">
+        <section className="mb-12 rounded-3xl bg-[var(--primary)] p-10 shadow-xl">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[var(--card)]">
             {heading} Collection
           </p>
-          <h1 className="mt-3 text-5xl font-extrabold tracking-tight">
+          <h1 className="mt-3 text-5xl font-extrabold tracking-tight text-[var(--card2)]">
             {activeCategory.name} Sheet Music
           </h1>
           <p className="mt-5 max-w-2xl text-xl leading-8 text-[var(--background)]/90">
@@ -69,7 +69,7 @@ export default async function CategoryCatalogPage({
 
         {songs.length === 0 ? (
           <div className="rounded-2xl border border-[var(--secondary)] bg-white p-12 text-center shadow-sm">
-            <h2 className="text-2xl font-bold text-[var(--primary)]">
+            <h2 className="text-2xl font-bold text-[var(--card)]">
               No Pieces Found
             </h2>
             <p className="mt-4 leading-7 text-gray-600">
@@ -136,13 +136,13 @@ export default async function CategoryCatalogPage({
                         Sheet Music
                       </p>
 
-                      <h2 className="mt-2 text-xl font-bold leading-tight text-[var(--primary)] line-clamp-2 group-hover:text-teal-700">
+                      <h2 className="mt-2 text-xl font-bold leading-tight text-[var(--card)] line-clamp-2 group-hover:text-teal-700">
                         {song.title}
                       </h2>
 
                       {/* Pill Badge Container Markup */}
                       <div className="mt-4 flex flex-wrap gap-2">
-                        <span className="rounded-full bg-[var(--background)] px-3 py-1 text-xs font-bold text-[var(--primary)]">
+                        <span className="rounded-full bg-[var(--background)] px-3 py-1 text-xs font-bold text-white">
                           {formattedPrice}
                         </span>
 
@@ -158,7 +158,7 @@ export default async function CategoryCatalogPage({
                         {instruments.slice(0, 1).map((name) => (
                           <span
                             key={`instrument-${name}`}
-                            className="rounded-full bg-[var(--secondary)] px-3 py-1 text-xs font-semibold text-[var(--primary)]"
+                            className="rounded-full bg-[var(--secondary)] px-3 py-1 text-xs font-semibold text-black"
                           >
                             {name}
                           </span>
@@ -166,7 +166,7 @@ export default async function CategoryCatalogPage({
                       </div>
                     </div>
 
-                    <div className="mt-6 border-t border-gray-100 pt-4 text-center text-sm font-semibold text-[var(--primary)] group-hover:underline">
+                    <div className="mt-6 border-t border-gray-100 pt-4 text-center text-sm font-semibold text-[var(--card)] group-hover:underline">
                       View Details
                     </div>
                   </div>

@@ -48,6 +48,14 @@ export default function MobileMenu({
               Home
             </Link>
 
+            <Link
+              href="/catalog"
+              onClick={closeMenu}
+              className="block font-medium text-blue-600 hover:underline"
+            >
+              Full Catalog
+            </Link>
+
             <MobileSection
               title="Voicing"
               links={voicingLinks}
