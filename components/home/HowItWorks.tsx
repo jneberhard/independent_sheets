@@ -1,3 +1,4 @@
+// Explanation on home screen
 export default function HowItWorks() {
     return(
         <section className="section-dark py-16 px-4 md:px-8">

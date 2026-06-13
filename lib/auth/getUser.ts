@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth/server";
 import { prisma } from "@/lib/prisma";
 
+// Gets user info for checking/authenticating against throughout application
 export async function getUser() {
   const session = await auth.getSession();
 

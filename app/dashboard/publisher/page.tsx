@@ -43,6 +43,7 @@ export default async function PublisherDashboardPage() {
         {/* These cards point the publisher to the real work areas: upload, manage,
             sales, purchase history, and account editing. */}
         <section className="mt-10 grid gap-6 md:grid-cols-3">
+          {/* Tiles on dashboard page. Essentially stylized link components */}
             <UploadTile />
             
             <EditUploadTile />

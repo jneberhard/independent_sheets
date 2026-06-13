@@ -75,6 +75,7 @@ export default function EditSheetMusicForm({
 
   async function uploadFile(file: File, folder: string) {
     const formData = new FormData();
+
     formData.append("file", file);
     formData.append("folder", folder);
 
@@ -82,12 +83,22 @@ export default function EditSheetMusicForm({
       method: "POST",
       body: formData,
     });
-
-    if (!response.ok) {
-      throw new Error(`Upload to ${folder} failed`);
+    // Parse data regardless of what result is
+    // This is done to get error msg in case the error is caused
+    // by encryption/password protection
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      throw new Error(`Server returned status ${response.status} and couldn't read response.`);
     }
-
-    return response.json();
+    if (!response.ok) {
+      if (data && data.error) {
+        throw new Error(data.error);
+      }
+      throw new Error("File upload failed on the server.");
+    }
+    return data;
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -140,11 +151,11 @@ export default function EditSheetMusicForm({
 
       router.push("/dashboard/publisher/music");
       router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("Sheet music could not be updated.");
-    } finally {
-      setIsSaving(false);
+      } catch (error: any) {
+          console.error("Upload error:", error);
+        alert(error.message || "An error occurred during upload. Please try again.");
+      } finally {
+        setIsSaving(false);
     }
   }
 

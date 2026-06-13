@@ -52,12 +52,22 @@ export default function PublisherUploadForm({
       method: "POST",
       body: formData,
     });
-
-    if (!response.ok) {
-      throw new Error("File upload failed");
+    // Parse data regardless of what result is
+    // This is done to get error msg in case the error is caused
+    // by encryption/password protection
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      throw new Error(`Server returned status ${response.status} and couldn't read response.`);
     }
-
-    return response.json();
+    if (!response.ok) {
+      if (data && data.error) {
+        throw new Error(data.error);
+      }
+      throw new Error("File upload failed on the server.");
+    }
+    return data;
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -133,18 +143,18 @@ export default function PublisherUploadForm({
       setMp3File(null);
       setImageFile(null);
 
-    } catch (error) {
-      console.error("Upload error:", error);
-      alert("An error occurred during upload. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    } catch (error: any) {
+        console.error("Upload error:", error);
+        alert(error.message || "An error occurred during upload. Please try again.");
+      } finally {
+        setIsSubmitting(false);
     }
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 space-y-6 rounded-2xl border bg-white p-8 shadow-sm"
+      className="mt-8 space-y-6 rounded-2xl border bg-white p-8 shadow-sm text-black"
     >
       <div>
         <label className="block text-sm font-semibold text-gray-700">

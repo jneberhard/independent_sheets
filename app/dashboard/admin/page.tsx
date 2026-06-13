@@ -38,6 +38,7 @@ export default async function AdminDashboardPage() {
         </section>
 
         <section className="mt-10 grid gap-6 md:grid-cols-3">
+          {/* Tiles on dashboard page. Essentially stylized link components */}
 
           <UploadTile />
 
