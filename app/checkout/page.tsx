@@ -253,7 +253,7 @@ export default function CheckoutPage() {
               <div>
                 <label htmlFor="firstName" className="block text-sm font-bold mb-2 flex items-center gap-2">
                   <User className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
-                  <span>First Name <span className="text-red-600" aria-hidden="true">*</span></span>
+                  <span>First Name <span className="text-red-100" aria-hidden="true">*</span></span>
                 </label>
                 <input
                   type="text"
@@ -268,7 +268,7 @@ export default function CheckoutPage() {
               <div>
                 <label htmlFor="lastName" className="block text-sm font-bold mb-2 flex items-center gap-2">
                   <User className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
-                  <span>Last Name <span className="text-red-600" aria-hidden="true">*</span></span>
+                  <span>Last Name <span className="text-red-100" aria-hidden="true">*</span></span>
                 </label>
                 <input
                   type="text"
@@ -286,7 +286,7 @@ export default function CheckoutPage() {
             <div>
               <label htmlFor="phoneNumber" className="block text-sm font-bold mb-2 flex items-center gap-2">
                 <Phone className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
-                <span>Phone Number <span className="text-red-600" aria-hidden="true">*</span></span>
+                <span>Phone Number <span className="text-red-100" aria-hidden="true">*</span></span>
               </label>
               <input
                 type="tel"
@@ -307,7 +307,7 @@ export default function CheckoutPage() {
               <div>
                 <label htmlFor="addressLine1" className="block text-sm font-bold mb-2 flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
-                  <span>Address Line 1 <span className="text-red-600" aria-hidden="true">*</span></span>
+                  <span>Address Line 1 <span className="text-red-100" aria-hidden="true">*</span></span>
                 </label>
                 <input
                   type="text"
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label htmlFor="city" className="block text-sm font-bold mb-2">
-                  City <span className="text-red-600" aria-hidden="true">*</span>
+                  City <span className="text-red-100" aria-hidden="true">*</span>
                 </label>
                 <input
                   type="text"
@@ -355,7 +355,7 @@ export default function CheckoutPage() {
               </div>
               <div>
                 <label htmlFor="stateProvince" className="block text-sm font-bold mb-2">
-                  State / Province <span className="text-red-600" aria-hidden="true">*</span>
+                  State / Province <span className="text-red-100" aria-hidden="true">*</span>
                 </label>
                 <input
                   type="text"
@@ -369,7 +369,7 @@ export default function CheckoutPage() {
               </div>
               <div>
                 <label htmlFor="postalCode" className="block text-sm font-bold mb-2">
-                  ZIP / Postal Code <span className="text-red-600" aria-hidden="true">*</span>
+                  ZIP / Postal Code <span className="text-red-100" aria-hidden="true">*</span>
                 </label>
                 <input
                   type="text"

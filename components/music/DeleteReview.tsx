@@ -46,7 +46,7 @@ export default function DeleteReviewButton({ reviewId, onDeleted }: DeleteReview
     <button
       onClick={handleDelete}
       disabled={isDeleting}
-      className="text-xs bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50 px-2.5 py-1 rounded-md font-medium transition"
+      className="text-sm bg-red-600 text-white hover:bg-red-800 disabled:opacity-50 px-2.5 py-1 rounded-md font-medium transition"
     >
       {isDeleting ? "Deleting..." : "Delete"}
     </button>

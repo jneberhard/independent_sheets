@@ -35,7 +35,7 @@ export default function CartPage() {
           {cart.length > 0 && (
             <button
               onClick={clearCart}
-              className="self-start text-sm font-semibold text-red-600 hover:text-red-800 hover:underline transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 rounded"
+              className="self-start text-sm font-semibold text-black hover:text-white hover:bg-red-800 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 p-3 bg-red-100 rounded"
             >
               Clear All Items
             </button>
@@ -48,15 +48,15 @@ export default function CartPage() {
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--background)] text-[var(--primary)]">
               <ShoppingCart className="h-10 w-10" aria-hidden="true" />
             </div>
-            <h2 className="text-2xl font-bold text-[var(--primary)]">
+            <h2 className="text-2xl font-bold text-[var(--accent)]">
               Your cart is empty
             </h2>
             <p className="mt-2 text-sm text-gray-500">
-              Looks like you have not added any sheet music items to your order collection yet.
+              Looks like you haven't added any sheet music to your order yet.
             </p>
             <Link
               href="/catalog"
-              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white shadow transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-black shadow transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               Browse Full Catalog
@@ -108,10 +108,10 @@ export default function CartPage() {
                           </div>
                         )}
 
-                        <h2 className="font-bold text-[var(--primary)] text-base sm:text-lg line-clamp-2">
+                        <h2 className="font-bold text-black text-base sm:text-lg line-clamp-2">
                           {item.title}
                         </h2>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-gray-700">
                           Unit Price: ${item.price.toFixed(2)}
                         </p>
                       </div>
@@ -136,7 +136,7 @@ export default function CartPage() {
                         >
                           −
                         </button>
-                        <span className="w-8 text-center text-sm font-bold text-[var(--primary)]" aria-live="polite">
+                        <span className="w-8 text-center text-sm font-bold text-gray-700" aria-live="polite">
                           {item.quantity}
                         </span>
                         <button
@@ -148,7 +148,7 @@ export default function CartPage() {
                         </button>
                       </div>
 
-                      <span className="text-base font-bold text-[var(--primary)]">
+                      <span className="text-base font-bold text-gray-700">
                         <span className="sr-only">Total product price: </span>
                         ${(item.price * item.quantity).toFixed(2)}
                       </span>
@@ -161,25 +161,25 @@ export default function CartPage() {
             {/* Right Column: Checkout Summary Card */}
             <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-6">
               <section className="rounded-2xl border border-[var(--secondary)] bg-white p-6 shadow-sm" aria-labelledby="summary-heading">
-                <h2 id="summary-heading" className="text-lg font-bold text-[var(--primary)] border-b border-gray-100 pb-4">
+                <h2 id="summary-heading" className="text-lg font-bold text-[var(--card2)] border-b border-gray-100 pb-4">
                   Order Summary
                 </h2>
 
                 <div className="mt-4 space-y-3">
-                  <div className="flex justify-between text-sm text-gray-500">
+                  <div className="flex justify-between text-sm text-gray-600">
                     <span>Total items</span>
-                    <span className="font-medium text-[var(--primary)]">
+                    <span className="font-medium text-[var(--card2)]">
                       {totalQuantity} copies
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-500">
+                  <div className="flex justify-between text-sm text-gray-600">
                     <span>Format</span>
-                    <span className="font-medium text-emerald-700">Digital Distribution License (PDF)</span>
+                    <span className="font-medium text-emerald-800">Digital Distribution License (PDF)</span>
                   </div>
 
                   <div className="border-t border-gray-100 pt-4 flex items-baseline justify-between">
-                    <span className="text-base font-bold text-[var(--primary)]">Total Cost</span>
-                    <span className="text-3xl font-black text-[var(--primary)]">
+                    <span className="text-base font-bold text-[var(--card2)]">Total Cost</span>
+                    <span className="text-3xl font-black text-[var(--accent)]">
                       ${total.toFixed(2)}
                     </span>
                   </div>
@@ -196,7 +196,7 @@ export default function CartPage() {
 
                   <Link
                     href="/catalog"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--primary)] bg-white py-3 text-center text-sm font-bold text-[var(--primary)] transition hover:bg-[var(--background)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--card2)] bg-white py-3 text-center text-sm font-bold text-[var(--card2)] transition hover:bg-gray-200 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
                   >
                     <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                     Continue Shopping

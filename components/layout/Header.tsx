@@ -183,14 +183,21 @@ export default async function Header() {
           {/* Home */}
           <Link
             href="/"
-            className="text-[var(--background)] hover:text-[var(--accent)] hover:underline"
+            className="text-[var(--background)] hover:text-[var(--card)] hover:underline"
           >
             Home
           </Link>
 
+          <Link 
+          href="/catalog" 
+          className="text-[var(--background)] hover:text-[var(--card)] hover:underline"
+          >
+            Full Catalog
+          </Link>
+
           {/* Voicing Dropdown */}
           <div className="group relative">
-            <button className="text-[var(--background)] hover:text-[var(--accent)] hover:underline">
+            <button className="text-[var(--background)] hover:text-[var(--card)] hover:underline">
               Voicing
             </button>
 
@@ -211,7 +218,7 @@ export default async function Header() {
 
           {/* Instrument Dropdown */}
           <div className="group relative">
-            <button className="text-[var(--background)] hover:text-[var(--accent)] hover:underline">
+            <button className="text-[var(--background)] hover:text-[var(--card)] hover:underline">
               Instruments
             </button>
 
@@ -232,7 +239,7 @@ export default async function Header() {
 
           {/* Genre Dropdown */}
           <div className="group relative">
-            <button className="text-[var(--background)] hover:text-[var(--accent)] hover:underline">
+            <button className="text-[var(--background)] hover:text-[var(--card)] hover:underline">
               Genres
             </button>
 
@@ -254,7 +261,7 @@ export default async function Header() {
           {/* Publisher Signup */}
           <Link
             href="/register/publisher"
-            className="text-[var(--background)] hover:text-[var(--accent)] hover:underline"
+            className="text-[var(--background)] hover:text-[var(--card)] hover:underline"
           >
             Arranger/Publisher Sign Up
           </Link>
