@@ -19,6 +19,7 @@ export default async function FullCatalogPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] px-6 py-12">
       <div className="mx-auto max-w-7xl">
+        {/* The catalog cards stay simple here because the category pages handle the deeper filtering views. */}
         <section className="mb-12 rounded-3xl bg-[var(--primary)] p-10 text-white shadow-xl">
           <p className="text-sm font-semibold uppercase tracking-widest text-[var(--accent)]">
             Explore
@@ -64,7 +65,7 @@ export default async function FullCatalogPage() {
                   href={`/music/${song.id}`}
                   className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--secondary)] bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  {/* image section */ }
+                  {/* Each card shows the cover, price, and a few useful tags at a glance. */}
                   <div className="aspect-[3/4] w-full overflow-hidden bg-gray-100">
                     {song.imageUrl ? (
                       <Image
@@ -72,6 +73,7 @@ export default async function FullCatalogPage() {
                         alt={`Cover art for ${song.title}`}
                         width={400}
                         height={533}
+                        unoptimized
                         className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />

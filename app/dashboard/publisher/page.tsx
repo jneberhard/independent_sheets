@@ -18,6 +18,8 @@ export default async function PublisherDashboardPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] px-6 py-12">
       <div className="mx-auto max-w-6xl">
+        {/* This opening section is the publisher's home base, so the main actions
+            are grouped here instead of spreading them across separate pages. */}
         <section className="rounded-3xl bg-[var(--primary)] p-10 text-white shadow-xl">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--card2)]">
             Publisher Workspace
@@ -35,6 +37,8 @@ export default async function PublisherDashboardPage() {
           </p>
         </section>
 
+        {/* These cards point the publisher to the real work areas: upload, manage,
+            sales, purchase history, and account editing. */}
         <section className="mt-10 grid gap-6 md:grid-cols-3">
           <Link
             href="/dashboard/publisher/upload"

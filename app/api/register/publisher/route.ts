@@ -5,6 +5,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    // The publisher signup starts here so we can make sure the role exists before
+    // creating the user and the nested publisher profile together.
     const publisherRole = await prisma.role.findUnique({
       where: {
         name: "PUBLISHER",
@@ -31,6 +33,8 @@ export async function POST(request: Request) {
       );
     }
 
+    // We create the auth user and the publisher profile in one go so the account
+    // stays in sync and we do not end up with a half-finished signup.
     const user = await prisma.user.create({
       data: {
         email: body.email,

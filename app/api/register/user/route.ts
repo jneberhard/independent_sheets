@@ -8,6 +8,8 @@ export async function POST(request: Request) {
 
     const { email, name } = body;
 
+    // We check first so we can give a friendly message instead of letting the
+    // database throw a harder-to-read error later.
     const existingUser = await prisma.user.findUnique({
       where: {
         email,
@@ -21,6 +23,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // The app now uses the USER role as the default entry point for normal signups.
     const userRole = await prisma.role.findUnique({
       where: {
         name: RoleName.USER,

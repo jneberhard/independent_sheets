@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth/client';
@@ -47,7 +47,10 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // 💡 Performance Optimization: Memoize standard pricing sums
+  const total = useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }, [cart]);
 
   const fetchProfile = useCallback(async () => {
     const userId = sessionData?.session?.userId;
@@ -75,12 +78,12 @@ export default function CheckoutPage() {
         }));
       }
     } catch (err) {
-      console.error('Error fetching data directly from database:', err);
+      console.error('Error fetching profile data:', err);
       setError('Could not download your saved address profile. Fields are open for manual entry.');
     } finally {
-      setLoading(false);
+      if (loading) { setLoading(false); }
     }
-  }, [sessionData?.session?.userId]);
+  }, [sessionData?.session?.userId, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,9 +114,7 @@ export default function CheckoutPage() {
     try {
       const profileResponse = await fetch("/api/profile", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -130,13 +131,14 @@ export default function CheckoutPage() {
         throw new Error('Failed to update profile information');
       }
 
+      // 💡 Bug Fix: Simplified object data assignments matching standard cart variables
       const orderData: OrderPayload = {
         items: cart.map(item => ({
           id: item.id,
           quantity: item.quantity,
-          price: item.price > 100 ? item.price / 100 : item.price,
+          price: item.price,
         })),
-        total: total > 100 ? total / 100 : total,
+        total: total,
         customer: {
           ...formData,
           userId,
@@ -174,11 +176,9 @@ export default function CheckoutPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Fixed Lifecycle Monitor (Safe from synchronous rendering loops)
   useEffect(() => {
     if (sessionLoading) return;
 
-    // Defers routing / background execution outside of React's paint window
     const layoutToken = setTimeout(() => {
       if (!sessionData?.session) {
         router.push('/auth/sign-in');
@@ -198,7 +198,7 @@ export default function CheckoutPage() {
 
   if (sessionLoading || (loading && sessionData?.session)) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center bg-[var(--background)]">
+      <div className="flex min-h-[50vh] items-center justify-center bg-[var(--background)]" role="status">
         <p className="text-sm font-medium animate-pulse text-[var(--foreground)] opacity-70">
           Loading secure checkout gateway...
         </p>
@@ -209,46 +209,51 @@ export default function CheckoutPage() {
   if (!sessionData?.session || cart.length === 0) return null;
 
   return (
-    <div className="min-h-screen bg-[var(--background)] transition-colors duration-200 py-6 text-[var(--foreground)]">
+    <main className="min-h-screen bg-[var(--background)] py-6 text-[var(--foreground)]">
       <div className="max-w-2xl mx-auto px-4">
         <div className="mb-6">
           <Link
             href="/cart"
-            className="inline-flex items-center gap-2 font-bold transition duration-200 text-[var(--primary)] hover:opacity-70"
+            className="inline-flex items-center gap-2 font-bold transition duration-200 text-[var(--primary)] hover:opacity-70 focus-visible:outline-none focus-visible:underline rounded"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back to Cart
           </Link>
         </div>
 
         <div className="bg-[var(--card)] rounded-2xl border border-[var(--secondary)] border-opacity-30 shadow-sm p-6 sm:p-8">
-          <div className="mb-8">
+          <header className="mb-8">
             <h1 className="text-3xl font-black mb-2">Checkout</h1>
             <p className="text-sm opacity-80">
               Review your billing info to process your digital license authorization.
             </p>
+          </header>
+
+          {/* 💡 Accessibility Fix: Explicit `aria-live` components announce async layout changes directly to users */}
+          <div aria-live="assertive" className="space-y-4">
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900 rounded-xl">
+                <p className="text-red-600 dark:text-red-400 text-sm font-medium">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 dark:bg-green-950 dark:border-green-900 rounded-xl">
+                <p className="text-green-600 dark:text-green-400 text-sm font-medium">
+                  Order placed successfully! Preparing your delivery access options...
+                </p>
+              </div>
+            )}
           </div>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-900 rounded-xl">
-              <p className="text-red-600 dark:text-red-400 text-sm font-medium">{error}</p>
-            </div>
-          )}
-
-          {success && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 dark:bg-green-950 dark:border-green-900 rounded-xl">
-              <p className="text-green-600 dark:text-green-400 text-sm font-medium">
-                Order placed successfully! Preparing your delivery access options...
-              </p>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name Fields */}
+
+            {/* Name Fields Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-bold mb-2 flex items-center gap-2">
-                  <User className="h-4 w-4 text-[var(--accent)]" /> First Name *
+                  <User className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
+                  <span>First Name <span className="text-red-600" aria-hidden="true">*</span></span>
                 </label>
                 <input
                   type="text"
@@ -256,13 +261,14 @@ export default function CheckoutPage() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-transparent transition focus:border-[var(--accent)] text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-transparent text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                   required
                 />
               </div>
               <div>
                 <label htmlFor="lastName" className="block text-sm font-bold mb-2 flex items-center gap-2">
-                  <User className="h-4 w-4 text-[var(--accent)]" /> Last Name *
+                  <User className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
+                  <span>Last Name <span className="text-red-600" aria-hidden="true">*</span></span>
                 </label>
                 <input
                   type="text"
@@ -270,16 +276,17 @@ export default function CheckoutPage() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-transparent transition focus:border-[var(--accent)] text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-transparent text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                   required
                 />
               </div>
             </div>
 
-            {/* Phone Number */}
+            {/* Phone Number Field */}
             <div>
               <label htmlFor="phoneNumber" className="block text-sm font-bold mb-2 flex items-center gap-2">
-                <Phone className="h-4 w-4 text-[var(--accent)]" /> Phone Number *
+                <Phone className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
+                <span>Phone Number <span className="text-red-600" aria-hidden="true">*</span></span>
               </label>
               <input
                 type="tel"
@@ -287,109 +294,122 @@ export default function CheckoutPage() {
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-transparent transition focus:border-[var(--accent)] text-sm"
+                className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-transparent text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                 placeholder="(555) 123-4567"
                 required
               />
             </div>
 
-            {/* Address Line 1 */}
-            <div>
-              <label htmlFor="addressLine1" className="block text-sm font-bold mb-2 flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-[var(--accent)]" /> Address Line 1 *
-              </label>
-              <input
-                type="text"
-                id="addressLine1"
-                name="addressLine1"
-                value={formData.addressLine1}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-transparent transition focus:border-[var(--accent)] text-sm"
-                placeholder="123 Main St"
-                required
-              />
-            </div>
+            {/* Address Lines Group */}
+            <fieldset className="space-y-4">
+              <legend className="sr-only">Billing Address Details</legend>
 
-            {/* Address Line 2 */}
-            <div>
-              <label htmlFor="addressLine2" className="block text-sm font-bold mb-2">
-                Address Line 2 (Optional)
-              </label>
-              <input
-                type="text"
-                id="addressLine2"
-                name="addressLine2"
-                value={formData.addressLine2}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-transparent transition focus:border-[var(--accent)] text-sm"
-                placeholder="Apt, Suite, Unit #"
-              />
-            </div>
+              <div>
+                <label htmlFor="addressLine1" className="block text-sm font-bold mb-2 flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
+                  <span>Address Line 1 <span className="text-red-600" aria-hidden="true">*</span></span>
+                </label>
+                <input
+                  type="text"
+                  id="addressLine1"
+                  name="addressLine1"
+                  value={formData.addressLine1}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-transparent text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                  placeholder="123 Main St"
+                  required
+                />
+              </div>
 
-            {/* City, State, Postal Code Grid */}
+              <div>
+                <label htmlFor="addressLine2" className="block text-sm font-bold mb-2">
+                  Address Line 2 (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="addressLine2"
+                  name="addressLine2"
+                  value={formData.addressLine2}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-transparent text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                  placeholder="Apt, Suite, Unit #"
+                />
+              </div>
+            </fieldset>
+
+            {/* City, State, Postal Code Location Clusters */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="city" className="block text-sm font-bold mb-2">City *</label>
+                <label htmlFor="city" className="block text-sm font-bold mb-2">
+                  City <span className="text-red-600" aria-hidden="true">*</span>
+                </label>
                 <input
                   type="text"
                   id="city"
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-transparent transition focus:border-[var(--accent)] text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-transparent text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="stateProvince" className="block text-sm font-bold mb-2">State / Province *</label>
+                <label htmlFor="stateProvince" className="block text-sm font-bold mb-2">
+                  State / Province <span className="text-red-600" aria-hidden="true">*</span>
+                </label>
                 <input
                   type="text"
                   id="stateProvince"
                   name="stateProvince"
                   value={formData.stateProvince}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-transparent transition focus:border-[var(--accent)] text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-transparent text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="postalCode" className="block text-sm font-bold mb-2">ZIP / Postal Code *</label>
+                <label htmlFor="postalCode" className="block text-sm font-bold mb-2">
+                  ZIP / Postal Code <span className="text-red-600" aria-hidden="true">*</span>
+                </label>
                 <input
                   type="text"
                   id="postalCode"
                   name="postalCode"
                   value={formData.postalCode}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-transparent transition focus:border-[var(--accent)] text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-transparent text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                   required
                 />
               </div>
             </div>
 
-            {/* Payment Gateway Selector */}
+            {/* Payment Options Element */}
             <div>
               <label htmlFor="payment" className="block text-sm font-bold mb-2 flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-[var(--accent)]" /> Payment Gateway
+                <CreditCard className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
+                <span>Payment Gateway</span>
               </label>
               <select
                 id="payment"
                 name="payment"
                 value={formData.payment}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 outline-none bg-[var(--card)] transition focus:border-[var(--accent)] text-sm font-medium"
+                className="w-full px-4 py-2.5 rounded-xl border-2 border-[var(--secondary)] border-opacity-50 bg-[var(--card)] text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
               >
                 <option value="card" className="bg-[var(--card)] text-[var(--foreground)]">Credit/Debit Card (Stripe Secure)</option>
                 <option value="paypal" className="bg-[var(--card)] text-[var(--foreground)]">PayPal Instant Transfer</option>
               </select>
             </div>
 
-            {/* Total Cost and Submission Row */}
+            {/* Final Conversion Processing Submission Section */}
             <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-[var(--secondary)] border-opacity-20">
-              <span className="text-xl font-black">Total Cost: ${total.toFixed(2)}</span>
+              <span className="text-xl font-black">
+                Total Cost: ${(total).toFixed(2)}
+              </span>
               <button
                 type="submit"
                 disabled={saving}
-                className="px-6 py-3 rounded-xl transition duration-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed font-bold text-sm shadow-sm bg-[var(--primary)] text-[var(--background)] dark:text-[var(--foreground)] hover:brightness-110"
+                className="px-6 py-3 rounded-xl transition duration-200 font-bold text-sm shadow-sm bg-[var(--primary)] text-[var(--background)] dark:text-[var(--foreground)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
               >
                 {saving ? 'Validating Transaction...' : 'Authorize & Place Order'}
               </button>
@@ -397,6 +417,6 @@ export default function CheckoutPage() {
           </form>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -12,6 +12,7 @@ export default async function GenreCatalogPage({
 }: GenreCatalogPageProps) {
   const { genre } = await params;
 
+  // Genre pages use the same shared layout so the browsing experience stays familiar.
   return (
     <CategoryCatalogPage
       group={CategoryGroup.GENRE}
