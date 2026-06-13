@@ -107,7 +107,13 @@ export default async function AdminDashboardPage() {
 
             <h2 className="mt-5 text-2xl font-bold">Purchased Sheet Music</h2>
 
-            <CustomerNav userId={user.id} />
+            <p className="mt-4 text-sm leading-7 text-black">
+              Your order history.
+            </p>
+
+            <div className="mt-6 text-sm font-semibold text-black group-hover:underline">
+              Order History →
+            </div>
           </Link>
 
           <Link
