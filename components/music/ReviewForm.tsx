@@ -91,8 +91,8 @@ export default function ReviewForm({ sheetMusicId }: ReviewFormProps) {
           rows={4}
           value={reviewText}
           onChange={(e) => setReviewText(e.target.value)}
-          placeholder="What did you think of this music piece?"
-          className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-500 focus:outline-none"
+          placeholder="Leave a review..."
+          className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-500 focus:outline-none text-black"
           required
         />
       </div>
