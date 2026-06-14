@@ -15,9 +15,6 @@ export default function DeleteReviewButton({ reviewId, onDeleted }: DeleteReview
   // Handles deletion logic of specific review. Done here rather than in api
   // for performance reasons
   const handleDelete = async () => {
-    const confirmed = window.confirm("Are you sure you want to delete this review?");
-    if (!confirmed) return;
-
     setIsDeleting(true);
 
     // Attempts to delete review
