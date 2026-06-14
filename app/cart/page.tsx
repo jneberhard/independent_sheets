@@ -52,7 +52,7 @@ export default function CartPage() {
               Your cart is empty
             </h2>
             <p className="mt-2 text-sm text-gray-500">
-              Looks like you haven't added any sheet music to your order yet.
+              Looks like you have not added any sheet music to your order yet.
             </p>
             <Link
               href="/catalog"
