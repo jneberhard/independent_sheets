@@ -51,8 +51,8 @@ export default async function Header() {
         ? "/dashboard/publisher"
         : "/dashboard";
 
-  const navClass = `absolute left-0 top-full z-50 w-48 origin-top-left rounded-xl border border-[var(--secondary)] bg-white p-2 
-    shadow-xl invisible opacity-0 scale-95 pointer-events-none group-hover:visible group-hover:opacity-100 group-hover:scale-100 
+  const navClass = `absolute left-0 top-full z-50 w-48 origin-top-left rounded-xl border border-[var(--secondary)] bg-white p-2
+    shadow-xl invisible opacity-0 scale-95 pointer-events-none group-hover:visible group-hover:opacity-100 group-hover:scale-100
     group-hover:pointer-events-auto transition-all duration-200 ease-out`
 
   return (
@@ -188,8 +188,8 @@ export default async function Header() {
             Home
           </Link>
 
-          <Link 
-          href="/catalog" 
+          <Link
+          href="/catalog"
           className="text-[var(--background)] hover:text-[var(--card)] hover:underline"
           >
             Full Catalog

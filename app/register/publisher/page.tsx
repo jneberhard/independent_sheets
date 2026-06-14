@@ -206,7 +206,7 @@ export default function PublisherRegisterPage() {
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600 hover:underline"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-300 hover:underline"
             >
               {showPassword ? "Hide" : "Show"}
             </button>
@@ -228,7 +228,8 @@ export default function PublisherRegisterPage() {
             <button
               type="button"
               onClick={() => setShowConfirmPassword((prev) => !prev)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600 hover:underline"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-300 hover:underline"
+
             >
               {showConfirmPassword ? "Hide" : "Show"}
             </button>
