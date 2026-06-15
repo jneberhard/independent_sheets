@@ -21,12 +21,14 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [error, setError] = useState("");
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setEmailError("");
     setPasswordError("");
+    setError("");
 
     // We validate early so the user gets a clear message before we call auth.
     if (!isValidEmail(email)) {
@@ -69,7 +71,10 @@ export default function LoginForm() {
       router.refresh();
     } catch (error) {
       console.error("Login failed:", error);
-      router.push(`/register?email=${encodeURIComponent(email)}`);
+
+      setError(
+        "Login failed. Please check your email and password, or use Google sign-in if this account was created with Google."
+      );
     }
   }
 
@@ -84,6 +89,12 @@ export default function LoginForm() {
         <p className="mt-2 text-sm text-gray-600">
           Sign in to continue to your dashboard and manage your sheet music.
         </p>
+
+        {error ? (
+          <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-800">
+            {error}
+          </div>
+        ) : null}
 
         <label className="mt-6 block text-sm font-medium text-gray-700">
           Email
