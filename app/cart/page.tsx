@@ -8,7 +8,7 @@ import { Trash2, ShoppingCart, Music, ArrowLeft, CreditCard } from 'lucide-react
 export default function CartPage() {
   const { cart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity } = useCart();
 
-  // Convert absolute numbers to float format
+  // This page turns the cart state into a checkout-ready summary for the buyer.
   const total = cart.reduce(
     (sum: number, item) => sum + item.price * item.quantity, 0
   );
