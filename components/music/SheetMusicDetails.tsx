@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Download, Music, FileText, ExternalLink } from "lucide-react";
+import { Download, Music, FileText, ExternalLink, LogIn } from "lucide-react";
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/currentUser";
 import { getSheetMusicDetails } from "@/lib/music/musicdetails";
@@ -116,7 +116,8 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
                   <Download className="h-4 w-4" />
                   Download PDF
                 </Link>
-              ) : (
+              ) : user ? (
+                // Only show add to cart button if user is logged in
                 <AddToCartButton
                   item={{
                     id: sheetMusic.id,
@@ -125,6 +126,15 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
                     imageUrl: sheetMusic.imageUrl
                   }}
                 />
+              ) : (
+                // If not logged in, prompt user to sign in
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-slate-800 transition"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Sign in to Buy
+                </Link>
               )}
             </div>
 
@@ -138,7 +148,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
 
               <Link href="/cart" className="flex-1">
                 <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-slate-100 py-3 text-center text-sm font-bold text-black transition hover:bg-slate-200 active:scale-[0.99]">
-                  Go to Checkout
+                  Go to Cart
                 </button>
               </Link>
             </div>
@@ -147,7 +157,7 @@ export default async function SheetMusicDetails({ id }: SheetMusicDetailsProps) 
         </div>
       </div>
 
-      {/*  SECONDARY CONTAINER: PDF Watermark Preview Iframe Only */}
+      {/* SECONDARY CONTAINER: PDF Watermark Preview Iframe Only */}
       <div className="grid gap-6 rounded-2xl border border-[var(--secondary)] bg-white p-6 sm:p-8 shadow-sm">
         <h3 className="text-xl font-bold text-black mb-2">Score Preview</h3>
 
