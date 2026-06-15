@@ -110,17 +110,23 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // Calculate the total sum of all individual ratings across all songs
+    const totalRatingSum = songs.reduce((sum, song) => {
+      return sum + song.reviews.reduce((rSum, r) => rSum + r.rating, 0);
+    }, 0);
+
+    // Count how many total reviews exist across the platform
+    const totalReviews = aggregated.reduce((sum, song) => sum + song.reviewCount, 0);
+
     const metrics = {
       totalSales: aggregated.reduce((sum, song) => sum + song.salesCount, 0),
       totalRevenueCents: aggregated.reduce((sum, song) => sum + song.totalRevenueCents, 0),
       totalRoyaltyCents: aggregated.reduce((sum, song) => sum + song.royaltyAmountCents, 0),
       totalPlatformCents: aggregated.reduce((sum, song) => sum + song.platformAmountCents, 0),
-      totalReviews: aggregated.reduce((sum, song) => sum + song.reviewCount, 0),
+      totalReviews,
       averageRating:
-        aggregated.length > 0
-          ? Math.round(
-              (aggregated.reduce((sum, song) => sum + song.averageRating, 0) / aggregated.length) * 10
-            ) / 10
+        totalReviews > 0
+          ? Math.round((totalRatingSum / totalReviews) * 10) / 10
           : 0,
     };
 
