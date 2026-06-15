@@ -59,6 +59,7 @@ export default function PublisherUploadForm({
     try {
       data = await response.json();
     } catch (parseError) {
+      console.error(parseError)
       throw new Error(`Server returned status ${response.status} and couldn't read response.`);
     }
     if (!response.ok) {

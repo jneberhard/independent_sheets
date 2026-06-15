@@ -1,8 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import OrderHistoryTile from "@/components/authdashboard/dashboardtiles/OrderHistoryTile";
 import AccountManagementTile from "@/components/authdashboard/dashboardtiles/AccountManagementTile";
-import CustomerNav from "@/components/authdashboard/dashboardtiles/CustomerNav";
 import { getCurrentUser } from "@/lib/currentUser";
 
 export default async function PublisherDashboardPage() {
