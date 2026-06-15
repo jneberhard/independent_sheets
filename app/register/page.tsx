@@ -15,6 +15,7 @@ const isValidPassword = (password: string) =>
 export default function RegisterPage() {
   const router = useRouter();
 
+  // Standard customer signup fields stay small so the page is quick to complete.
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +37,7 @@ export default function RegisterPage() {
     setPasswordError("");
     setConfirmPasswordError("");
 
-    // Email validation
+    // Validate the form before talking to auth or the database.
     if (!isValidEmail(email)) {
       setEmailError("Please enter a valid email address.");
       return;
@@ -57,6 +58,7 @@ export default function RegisterPage() {
     }
 
     try {
+      // Create the auth account first, then mirror the user into our local DB.
       await authClient.signUp.email({
         name,
         email,
@@ -74,6 +76,7 @@ export default function RegisterPage() {
         }),
       });
 
+      // After signup, send the user back to the site instead of keeping them on the form.
       router.refresh();
       router.push("/");
     } catch (error: unknown) {

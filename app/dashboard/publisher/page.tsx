@@ -40,6 +40,7 @@ export default async function PublisherDashboardPage() {
         {/* These cards point the publisher to the real work areas: upload, manage,
             sales, purchase history, and account editing. */}
         <section className="mt-10 grid gap-6 md:grid-cols-3">
+          {/* Each card is a shortcut into the part of the app the publisher needs most often. */}
           <Link
             href="/dashboard/publisher/upload"
             className="group rounded-3xl border border-[var(--secondary)] bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"

@@ -46,6 +46,7 @@ export default function PublisherRegisterPage() {
     field: keyof typeof formData,
     value: string | boolean
   ) {
+    // One state object keeps the long publisher form manageable.
     setFormData((current) => ({
       ...current,
       [field]: value,
@@ -55,6 +56,7 @@ export default function PublisherRegisterPage() {
   function validateForm() {
     const newErrors: Record<string, string> = {};
 
+    // Required identity and contact fields are checked here before signup can continue.
     if (!formData.firstName.trim()) newErrors.firstName = "First name is required.";
     if (!formData.lastName.trim()) newErrors.lastName = "Last name is required.";
     if (!formData.displayName.trim()) newErrors.displayName = "Display name is required.";
@@ -92,6 +94,7 @@ export default function PublisherRegisterPage() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    // Stop early if the form is incomplete so the backend never sees half-finished data.
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -108,6 +111,7 @@ export default function PublisherRegisterPage() {
     }
 
     try {
+      // Create the auth user first, then save the publisher profile data into our app DB.
       await authClient.signUp.email({
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
@@ -127,6 +131,7 @@ export default function PublisherRegisterPage() {
         return;
       }
 
+      // Once both sides are saved, send the user straight to the publisher dashboard.
       router.push("/dashboard/publisher");
       router.refresh();
     } catch (error) {

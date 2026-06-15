@@ -16,6 +16,7 @@ const isValidPassword = (password: string) =>
 export default function LoginForm() {
   const router = useRouter();
 
+  // These fields drive the standard email/password login flow.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -59,6 +60,7 @@ export default function LoginForm() {
 
       const data = await response.json();
 
+      // The role decides where the user lands after login.
       if (data.role === "PUBLISHER") {
         router.push("/dashboard/publisher");
       } else if (data.role === "ADMIN") {

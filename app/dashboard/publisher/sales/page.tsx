@@ -28,5 +28,7 @@ export default async function SalesPage() {
     },
   });
 
+  // The client component does the heavy lifting; this page only sends it the
+  // songs list so it can build the report and filters.
   return <SalesReportClient songs={songs} />;
 }

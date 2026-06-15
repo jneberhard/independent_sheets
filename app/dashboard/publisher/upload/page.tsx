@@ -27,6 +27,8 @@ export default async function PublisherUploadPage() {
     ],
   });
 
+  // The upload form gets categories split into three groups so the UI can show
+  // voicing, instrument, and genre selectors separately.
   const voicingCategories = categories.filter(
     (category) => category.group === "VOICING"
   );
