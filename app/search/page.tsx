@@ -62,10 +62,10 @@ export default async function SearchPage({
     <main className="min-h-screen bg-[var(--background)] px-6 py-12">
       <div className="mx-auto max-w-5xl">
         {/* Header Section */}
-        <section className="rounded-3xl bg-[var(--primary)] p-8 text-white shadow-lg">
+        <section className="rounded-3xl bg-[var(--accent)] p-8 text-white shadow-lg">
           <h1 className="mt-3 text-4xl font-bold">Search Results</h1>
 
-          <p className="mt-4 text-lg text-[var(--background)]">
+          <p className="mt-4 text-lg text-white">
             Results for:{" "}
             <span className="font-semibold">
               {query || "All Sheet Music"}
@@ -77,7 +77,7 @@ export default async function SearchPage({
         <section className="mt-8">
           {songs.length === 0 ? (
             <div className="rounded-2xl border border-[var(--secondary)] bg-white p-8 shadow-sm">
-              <h2 className="text-xl font-bold text-[var(--primary)]">
+              <h2 className="text-xl font-bold text-[var(--card)]">
                 No Results Found
               </h2>
 
@@ -114,12 +114,12 @@ export default async function SearchPage({
                           Sheet Music
                         </p>
 
-                        <h2 className="mt-2 text-2xl font-bold text-[var(--primary)]">
+                        <h2 className="mt-2 text-2xl font-bold text-[var(--card)]">
                           {song.title}
                         </h2>
 
                         <div className="mt-4 flex flex-wrap gap-2">
-                          <span className="rounded-full bg-[var(--background)] px-3 py-1 text-sm font-semibold text-[var(--primary)]">
+                          <span className="rounded-full bg-[var(--background)] px-3 py-1 text-sm font-semibold text-white">
                             {formattedPrice}
                           </span>
 
@@ -130,7 +130,7 @@ export default async function SearchPage({
                           )}
 
                           {instrumentations.length > 0 && (
-                            <span className="rounded-full bg-[var(--secondary)] px-3 py-1 text-sm font-semibold text-[var(--primary)]">
+                            <span className="rounded-full bg-[var(--secondary)] px-3 py-1 text-sm font-semibold text-black">
                               Instrumentation: {instrumentations.join(", ")}
                             </span>
                           )}
@@ -143,7 +143,7 @@ export default async function SearchPage({
                         </div>
                       </div>
 
-                      <div className="hidden rounded-full bg-[var(--background)] px-4 py-2 text-sm font-semibold text-[var(--primary)] sm:block">
+                      <div className="hidden rounded-full bg-[var(--background)] px-4 py-2 text-sm font-semibold text-white sm:block">
                         View →
                       </div>
                     </div>
