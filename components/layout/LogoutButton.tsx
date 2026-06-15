@@ -2,16 +2,25 @@
 
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
+import { useCart } from "@/app/context/CartContext";
 
 export default function LogoutButton() {
   const router = useRouter();
+  const { clearCart } = useCart();
 
   async function handleLogout() {
-    await authClient.signOut();
+    try {
+      // Clears the cart upon logout
+      clearCart();
+      
+      // Then attempts to signout
+      await authClient.signOut();
 
-    router.push("/");
-    router.refresh();
-
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout failed: ", error);
+    }
   }
 
   return (

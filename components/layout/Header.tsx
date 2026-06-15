@@ -132,7 +132,7 @@ export default async function Header() {
 
           {/* Mobile Section */}
           <div className="flex items-center gap-4 md:hidden">
-            <HeaderCartIcon isMobile />
+            {!isLoggedIn ? (<span></span>) :  <HeaderCartIcon isMobile />}
 
             <div className="flex flex-col items-end gap-1">
               {/* Hamburger Menu */}
